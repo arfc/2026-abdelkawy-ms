@@ -9,8 +9,6 @@
 \usepackage[bookmarksdepth=3,linktoc=all,colorlinks=true,urlcolor=blue,linkcolor=blue,citecolor=blue]{hyperref}
 \usepackage[capitalize]{cleveref}
 \usepackage[style=ieee]{biblatex}
-
-
 % \usepackage{ruledchapters}  % example of compliant heading format, uncomment to use
 \usepackage[acronym,toc]{glossaries}
 \makeglossaries
@@ -22,9 +20,11 @@
 \newcounter{counterforappendices}
 \usepackage{xspace}
 \usepackage{graphics}
+\usepackage[version=4]{mhchem}
 
 \newcommand{\Cycamore}{\textsc{Cycamore}\xspace}
 \newcommand{\Cyclus}{\textsc{Cyclus}\xspace}
+\newcommand{\needcite}[1]{\textcolor{red}{\textbf{[CITE: #1]}}}
 
 
 \usepackage{placeins}
@@ -152,8 +152,9 @@ Acks.
 \chapter{Introduction}
 \input{introduction}
 
-\chapter{Literature Review}
-\section{A section}
+\chapter{Background and Literature Review}
+\label{ch:background}
+\input{background_Litreview.tex}
 %%equations must be numbered within chapters.
 
 \chapter{Conclusions}
