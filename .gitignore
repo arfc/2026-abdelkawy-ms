@@ -10,6 +10,11 @@
 *.synctex.gz
 *.bbl
 *.blg
+*.acn
+*.bcf
+*.glo
+*.ist
+*.run.xml
 
 # Vim swap files
 *.swp
