@@ -84,14 +84,13 @@
 \begin{document}
 \title{Example Template \\
         Guide}
-\author{Charles Bae}
+\author{Samar Abdelkawy}
 \department{Nuclear, Plasma, Radiological Engineering}
-\concentration{Computational Science and Engineering} %remove concentration if you don't have it
 \msthesis %change it to \phdthesis to set the correct thesis type
-\degreeyear{2021}
+\degreeyear{2026}
 \committee{
     Associate Professor Kathryn D. Huff, Chair\\
-    Title Firstname Lastname, Second Reader}
+    Professor James Stubbins, Second Reader}
 
 
 
@@ -150,14 +149,25 @@ Acks.
 % input individual chapters files.
 
 \chapter{Introduction}
-\input{introduction}
+\label{ch:intro}
+\input{introduction.tex}
 
 \chapter{Background and Literature Review}
 \label{ch:background}
 \input{background_Litreview.tex}
 %%equations must be numbered within chapters.
 
+\chapter{Methodology}
+\label{ch:methodology}
+\input{methodology.tex}
+
+\chapter{Results}
+\label{ch:results}
+\input{results.tex}
+
 \chapter{Conclusions}
+\label{ch:conclusion}
+\input{conclusion.tex}
 Conclusion.
 
 % per Graduate College preference, place the \appendix and the appendices content before the
