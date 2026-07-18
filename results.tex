@@ -5,8 +5,8 @@ Before any transmutation results are presented, this section characterizes the
 inventory that the \texttt{us\_inventory} archetype ingests, establishing both
 that the \gls{STANDARDS}~5.0.1 dataset is loaded correctly and the scale and
 distribution of the material available to the fuel cycle. Because the inventory
-load is deterministic---the same directory of assembly records always produces
-the same pool---these results depend only on the input data and the parser, not
+load is deterministic, the same directory of assembly records always produces
+the same pool, these results depend only on the input data and the parser, not
 on any simulation dynamics.
 
 Reading the 75 assembly-record files yields $315{,}976$ individual assemblies,
@@ -83,7 +83,7 @@ Because every policy eventually draws from the same finite pool, the total
 minor actinide any policy can deliver is identical: the cumulative curves all
 terminate at the same $103.8~\mathrm{t}$
 (Section~\ref{sec:results-baseline}). What the policy changes is the
-\emph{trajectory}---how quickly minor actinide accumulates as assemblies are
+\emph{trajectory}, how quickly minor actinide accumulates as assemblies are
 drawn. Figure~\ref{fig:results-policy-trajectory} shows the cumulative minor
 actinide delivered against the number of assemblies drawn, for the three
 representative policies of set~A, with a horizontal line marking one
@@ -91,7 +91,7 @@ $27~\mathrm{t}$ minor-actinide-only core.
 
 The separation is large. Ranking by \texttt{highest\_minor\_actinide} reaches a
 full core after roughly $4.8\times10^{4}$ assembly draws, whereas
-\texttt{lowest\_minor\_actinide} requires about $1.28\times10^{5}$---a factor of
+\texttt{lowest\_minor\_actinide} requires about $1.28\times10^{5}$, a factor of
 $2.7$ more material handled for the same core. The unranked \texttt{first}
 baseline falls between them, at about $7.7\times10^{4}$ draws, and its curve is
 visibly segmented: because \texttt{first} draws facility by facility in load
@@ -104,7 +104,7 @@ throughput, which is not the subject of this comparison.
 This is the practical face of the scarcity established in
 Section~\ref{sec:results-baseline}. With the national inventory holding fewer
 than four cores of minor actinide in total, the order of retrieval governs how
-much spent fuel must be handled---and, as shown next, from how many sites---to
+much spent fuel must be handled, and, as shown next, from how many sites, to
 assemble even a single core.
 
 \begin{figure}[htbp]
@@ -133,7 +133,7 @@ concentrates the core in a handful of sites, each contributing on the order of
 $2~\mathrm{t}$; \texttt{highest\_minor\_actinide} instead spreads the draw across
 many facilities, tapping the minor-actinide-rich assemblies wherever they
 reside, so that no single site dominates. Ranking for feed quality thus trades a
-geographically concentrated retrieval for a distributed one---a consideration
+geographically concentrated retrieval for a distributed one, a consideration
 that connects directly to transportation and logistics, which fall outside the
 scope of this work but are enabled by the provenance recorded in
 \texttt{us\_inventorySupply} (Table~\ref{tab:usinv-supply}).
@@ -159,7 +159,7 @@ recorded in the assembly data can be used to reshape both the composition and
 the geographic origin of the material entering the fuel cycle.
 
 Finally, that the mechanism operates identically inside a full \Cyclus
-simulation---not only in offline analysis of the pool---was confirmed in a
+simulation, not only in offline analysis of the pool, was confirmed in a
 standalone \texttt{us\_inventory} run in which the average composition of the
 supplied material tracked the active policy, with plutonium- and
 burnup-ranked policies delivering the correspondingly higher plutonium and
@@ -179,8 +179,8 @@ anticipated there, the once-through and recycling modes produce nearly identical
 histories wherever the burner is cycle-limited rather than feed-limited, so a
 single representative run suffices for those cases. The results therefore reduce
 to two comparisons that isolate the physics of interest. The first contrasts the
-two burner configurations---the minor-actinide-only core (ADS~1) and the
-\(50/50\) plutonium--minor-actinide core (ADS~2)---over the 100-year horizon,
+two burner configurations, the minor-actinide-only core (ADS~1) and the
+\(50/50\) plutonium-minor-actinide core (ADS~2), over the 100-year horizon,
 establishing how core size and feed composition govern the burner's behavior. The
 second contrasts recycling against once-through operation for the
 minor-actinide-only core, the one pairing where the two modes diverge. Throughout,
@@ -235,7 +235,7 @@ through to the fission-product inventory.
   \centering
   \includegraphics[width=0.9\textwidth]{figures/case4_puma_recycle_100yr_fp_yield}
   \caption[Fission-product yield of the \(50/50\) core.]{Cumulative fission-product
-  chain yield of the \(50/50\) plutonium--minor-actinide core (ADS~2). Relative to
+  chain yield of the \(50/50\) plutonium-minor-actinide core (ADS~2). Relative to
   the minor-actinide-only core, the plutonium-bearing feed fills in the
   symmetric-fission valley and shifts the light peak slightly higher in mass, the
   expected signature of a heavier fissioning system.}
@@ -253,14 +253,16 @@ the \(50/50\) core the burn fraction rises to just under \(50\%\)
 fissions more readily than the minor-actinide vector, so a larger fraction of each
 charge is consumed per pass.
 
-The burn fraction reported here is the net actinide mass fissioned, obtained from
-the discharge mass balance (Equation~\ref{eq:ads-ratio}). The raw
-\texttt{ActinideDestroyed} event (Equation~\ref{eq:ads-destroyed}) is not used as
-the performance metric, because for the minor-actinide-only core it overstates
-destruction: it attributes to ``destroyed'' the minor actinide that transmutes
-into plutonium, without crediting that bred plutonium, which remains in the core
-as actinide. The mass-balance quantity closes against the fission-product yield to
-within the fission mass defect (of order \(0.1\%\)) and is used throughout.
+The burn fraction reported here is the net reduction in total actinide mass,
+calculated from the \texttt{ActinideDestroyed} event according to
+Equation~\ref{eq:ads-destroyed}. Equation~\ref{eq:ads-ratio} first determines the
+mass retained in the discharged product, after which the archetype subtracts the
+total actinide mass remaining in that product from the total actinide mass in the
+matched case's initial loading. Because plutonium is included in the total
+actinide inventory, minor actinides converted into plutonium remain in
+\(M_{\mathrm{out}}a_c(t_{\mathrm{irr}})\) and are not counted as destroyed. The
+reported value therefore represents net actinide destruction in the tracked
+depletion inventory, rather than the disappearance of minor actinides alone.
 
 This per-cycle rate can be checked against first principles. Fissioning one
 kilogram of actinide releases approximately \(0.93~\mathrm{GW\text{-}d}\) of
@@ -278,10 +280,10 @@ accounting.
   \includegraphics[width=0.95\textwidth]{figures/case3_ma_recycle_100yr_percycle}
   \caption[Per-cycle mass accounting for the minor-actinide-only core.]{Per-cycle
   charge and actinide destruction for the minor-actinide-only core (ADS~1),
-  100-year recycling run. Each cycle charges \(27~\mathrm{t}\) and fissions
-  \(11.15~\mathrm{t}\), a constant burn fraction of \(41.3\%\) (bottom panel). The
+  100-year recycling run. Each cycle charges \(27~\mathrm{t}\) and records
+  \(11.15~\mathrm{t}\) of net actinide destruction, a constant burn fraction of \(41.3\%\) (bottom panel). The
   cumulative panel (centre) reaches \(135~\mathrm{t}\) charged and
-  \(55.8~\mathrm{t}\) fissioned over five cycles.}
+  \(55.8~\mathrm{t}\) of cumulative net actinide destruction over five cycles.}
   \label{fig:results-case3-recycle-percycle}
 \end{figure}
 
@@ -289,9 +291,9 @@ accounting.
   \centering
   \includegraphics[width=0.95\textwidth]{figures/case4_puma_recycle_100yr_percycle}
   \caption[Per-cycle mass accounting for the \(50/50\) core.]{Per-cycle charge and
-  actinide destruction for the \(50/50\) plutonium--minor-actinide core (ADS~2),
-  100-year recycling run. Each cycle charges \(4.4~\mathrm{t}\) and fissions
-  \(2.2~\mathrm{t}\), a burn fraction just under \(50\%\). The small, fast-cycling
+  actinide destruction for the \(50/50\) plutonium-minor-actinide core (ADS~2),
+  100-year recycling run. Each cycle charges \(4.4~\mathrm{t}\) and records
+  \(2.2~\mathrm{t}\) of net actinide destruction, a burn fraction just under \(50\%\). The small, fast-cycling
   core completes 42 cycles over the horizon.}
   \label{fig:results-case4-recycle-percycle}
 \end{figure}
@@ -302,15 +304,19 @@ accounting.
 The two burner configurations produce very different operating histories, driven
 entirely by core size and the resulting cycle length.
 Figures~\ref{fig:results-case3-recycle-dutycycle}
-and~\ref{fig:results-case4-recycle-dutycycle} show the core state---irradiating or
-idle---over the 100-year horizon for the two cases.
+and~\ref{fig:results-case4-recycle-dutycycle} show the core state, irradiating or
+idle, over the 100-year horizon for the two cases.
 
 The minor-actinide-only core is large (\(27~\mathrm{t}\)) and is irradiated for
 ten years per cycle. Over 100 years of recycling it completes only five cycles and
 then falls idle for the remainder of the horizon, reaching a duty factor of
-\(50\%\). The core stops not because the horizon ends but because it runs out of
-feed: the accessible minor-actinide inventory is finite, and once it is consumed
-the burner has nothing to charge. The \(50/50\) core, by contrast, is small
+\(50\%\). The core stops not because the horizon ends, but because the quantity
+of recoverable neptunium, americium, and curium accumulated in its feed buffer no
+longer reaches the \(27~\mathrm{t}\) full-core loading required by the archetype.
+This does not mean that no actinide remains in the fuel cycle: some surviving
+actinide has been converted to plutonium, which is not returned to the
+minor-actinide-only feed, while additional material remains in discharged
+products, waste, and facility buffers. The \(50/50\) core, by contrast, is small
 (\(4.4~\mathrm{t}\)) and is cycled every two years. It completes 42 cycles and
 runs essentially continuously across the full horizon, at a duty factor of
 \(85\%\). It never exhausts its feed because it consumes minor actinide slowly and
@@ -320,7 +326,7 @@ This is the central distinction between the two configurations. The
 minor-actinide-only core is \emph{feed-limited}: its throughput is set by how much
 minor actinide the inventory can supply, not by reactor physics. The \(50/50\)
 core is \emph{cycle-limited}: it processes feed as fast as its cycle allows, and
-the inventory is deep enough---because it draws on plutonium---to sustain that pace
+the inventory is deep enough, because it draws on plutonium, to sustain that pace
 for a century. The trade-off is that the \(50/50\) core is no longer a pure
 minor-actinide burner: half of what it destroys is plutonium, so it addresses the
 broader transuranic inventory rather than the minor actinides specifically. Over
@@ -333,8 +339,9 @@ co-burning plutonium the minor-actinide case leaves untouched.
   \includegraphics[width=0.95\textwidth]{figures/case3_ma_recycle_100yr_dutycycle}
   \caption[Core state of the minor-actinide-only burner.]{Irradiating-or-idle
   state of the minor-actinide-only core (ADS~1) over the 100-year recycling run.
-  The core completes five ten-year cycles and then falls idle, having exhausted
-  its feed; the duty factor is \(50\%\).}
+  The core completes five ten-year cycles and then falls idle because its
+  recoverable Np-Am-Cm feed no longer reaches the \(27~\mathrm{t}\) full-core
+  loading threshold; the duty factor is \(50\%\).}
   \label{fig:results-case3-recycle-dutycycle}
 \end{figure}
 
@@ -361,16 +368,16 @@ The minor-actinide-only core is the one configuration where recycling materially
 changes the outcome, precisely because it is feed-limited. Comparing the recycling
 per-cycle history (Figure~\ref{fig:results-case3-recycle-percycle}) with the
 once-through history (Figure~\ref{fig:results-case3-oncethrough-percycle}) isolates
-the effect. The two runs share an identical per-cycle signature---the same
+the effect. The two runs share an identical per-cycle signature, the same
 \(27~\mathrm{t}\) charge, the same \(11.15~\mathrm{t}\) destroyed, and the same
-\(41.3\%\) burn fraction in the bottom panel of each figure---because the reduced-
+\(41.3\%\) burn fraction in the bottom panel of each figure, because the reduced-
 order depletion physics does not depend on where the feed came from. What differs
 is how many cycles the burner completes before its feed is spent: three under
 once-through, five under recycling.
 
-The cumulative panels make the consequence concrete. In once-through mode the
-burner charges \(81~\mathrm{t}\) in total and fissions \(33.5~\mathrm{t}\); with
-recycling it charges \(135~\mathrm{t}\) and fissions \(55.8~\mathrm{t}\), an
+The cumulative panels make the consequence concrete. In once-through mode the burner charges \(81~\mathrm{t}\) in total and
+records \(33.5~\mathrm{t}\) of net actinide destruction; with recycling it
+charges \(135~\mathrm{t}\) and records \(55.8~\mathrm{t}\), an
 increase of \(1.67\times\) in actinide destroyed. Recycling achieves this by
 recovering the surviving minor actinides from each discharge and returning them to
 the feed, so the same atoms make more than one pass through the core and the
@@ -379,18 +386,20 @@ burner sustains operation past the point where the once-through supply is spent.
 The charged figure is itself the clearest evidence of reuse. The total accessible
 minor-actinide inventory is only \(103.8~\mathrm{t}\)
 (Section~\ref{sec:results-baseline}), yet the recycling run charges
-\(135~\mathrm{t}\)---more minor actinide than exists in the national inventory.
+\(135~\mathrm{t}\), more minor actinide than exists in the national inventory.
 This is possible only because recycling returns material for additional passes;
 the excess of roughly \(31~\mathrm{t}\) is minor actinide irradiated more than
 once. The once-through run, by contrast, charges \(81~\mathrm{t}\), comfortably
 within the inventory, and simply stops when the accessible feed is gone.
 
 Even with recycling, however, the burner still stops well short of the horizon.
-The national minor-actinide inventory of \(103.8~\mathrm{t}\) is only about
-\(3.8\) core-loadings, so no amount of recycling can keep a \(27~\mathrm{t}\) core
-running indefinitely: recycling extends the campaign from three cores to five, not
-to the roughly nine a century of ten-year cycles could physically accommodate.
-The binding constraint is the inventory itself.
+The initial \(103.8~\mathrm{t}\) minor-actinide inventory is only about
+\(3.8\) fresh core-loadings. After each irradiation, only the surviving
+neptunium, americium, and curium is eligible to return to the ADS~1 feed; actinide
+converted to plutonium is routed outside that feed stream, and the archetype will
+not load a partial core. Recycling therefore extends the campaign from three
+cores to five, but eventually the recoverable minor-actinide feed remains below
+the \(27~\mathrm{t}\) loading threshold.
 
 \begin{figure}[htbp]
   \centering
@@ -401,7 +410,7 @@ The binding constraint is the inventory itself.
   charge, destruction, and \(41.3\%\) burn fraction match the recycling run
   (Figure~\ref{fig:results-case3-recycle-percycle}), but the burner completes only
   three cycles, reaching \(81~\mathrm{t}\) charged and \(33.5~\mathrm{t}\)
-  fissioned before its feed is exhausted.}
+  of cumulative net actinide destruction before its feed is exhausted.}
   \label{fig:results-case3-oncethrough-percycle}
 \end{figure}
 
@@ -422,13 +431,13 @@ core from 30 to 100 years adds only two further cycles.
 The consequence is that sizing a fleet to destroy the minor-actinide inventory is
 not the usual reactor-capacity problem. The entire national minor-actinide
 inventory is under four core-loadings; the limitation is how quickly that finite
-inventory can be retrieved, separated, and---critically---recycled, not how much
+inventory can be retrieved, separated, and, critically, recycled, not how much
 reactor power is installed. Additional units shorten the calendar time to work
 through the available feed but cannot destroy more minor actinide than the
 inventory contains. A configuration that instead co-burns plutonium, as the
 \(50/50\) core does, sidesteps the feed limit but redefines the mission from
 minor-actinide destruction to bulk transuranic destruction. This inversion of the
-usual sizing question---feed-bound rather than power-bound---is the central
+usual sizing question, feed-bound rather than power-bound, is the central
 practical finding of the transmutation results, and it is examined further in the
 discussion of Section~\ref{sec:results-discussion}.
 
@@ -452,41 +461,48 @@ back to the waste-management motivation of Chapter~\ref{ch:background}.
 \subsection{Disposition of the Minor-Actinide Inventory}
 \label{subsec:results-fate-ma}
 
-Table~\ref{tab:results-ma-fate} accounts for the \(103.8~\mathrm{t}\) of accessible
-minor actinide (Section~\ref{sec:results-baseline}) at the end of the 100-year
-minor-actinide-only runs. In once-through operation the burner fissions
-\(33.5~\mathrm{t}\)---about a third of the national inventory---and leaves the
-remaining \(70.3~\mathrm{t}\) undestroyed. Of that remainder, roughly
-\(47.5~\mathrm{t}\) is surviving actinide discharged to waste, and about
-\(22.8~\mathrm{t}\) is never processed at all: once three cores have been drawn,
-the minor actinide left in the unprocessed inventory is less than a single
-\(27~\mathrm{t}\) core loading, so the burner cannot assemble a fourth core and
-stalls with that material stranded.
+Table~\ref{tab:results-ma-fate} closes the actinide mass balance against the
+\(103.8~\mathrm{t}\) of minor actinide initially present in the accessible
+inventory (Section~\ref{sec:results-baseline}). The quantity labeled
+``undestroyed descendant actinide'' is the initial actinide mass minus the net
+actinide destruction recorded by the ADS. It is therefore not equivalent to
+minor-actinide feed still available to the burner: it includes any surviving
+neptunium, americium, and curium, actinides produced by transmutation such as
+plutonium, material routed to waste, and material held in facility buffers.
 
-Recycling improves the destroyed fraction to \(55.8~\mathrm{t}\), a little over
-half the national inventory, by returning surviving minor actinides for further
-passes rather than discarding them, and by drawing down essentially all of the
-accessible inventory rather than stranding a core's worth. Even so, just under
-half of the minor actinide remains undestroyed at the end of the century,
-consistent with the feed-limited behavior established in
-Section~\ref{subsec:results-ads-recycle}: the \(27~\mathrm{t}\) core is simply too
-large relative to the available inventory to consume it within the horizon.
+In once-through operation the burner records \(33.5~\mathrm{t}\) of net actinide
+destruction and leaves \(70.3~\mathrm{t}\) of descendant actinide undestroyed. Of
+that remainder, roughly \(47.5~\mathrm{t}\) is surviving actinide discharged to
+waste, while about \(22.8~\mathrm{t}\) remains in unprocessed inventory because
+it is insufficient to form another \(27~\mathrm{t}\) core.
+
+With recycling, net actinide destruction increases to \(55.8~\mathrm{t}\), leaving
+\(48.0~\mathrm{t}\) of descendant actinide somewhere in the modeled fuel cycle.
+The \(48.0~\mathrm{t}\) value does not imply that a further \(27~\mathrm{t}\)
+minor-actinide core could be loaded. In the ADS~1 flowsheet, only Np, Am, and Cm
+are recovered as burner feed; plutonium produced during irradiation is routed
+outside the minor-actinide feed stream, and the remaining recoverable
+minor-actinide inventory is distributed among products and buffers. The ADS
+therefore stalls when its feed buffer cannot again accumulate a full
+\(27~\mathrm{t}\) loading.
 
 \begin{table}[htbp]
     \centering
-    \caption{Disposition of the \(103.8~\mathrm{t}\) accessible minor-actinide
-    inventory at the end of the 100-year minor-actinide-only runs. ``Remaining''
-    combines surviving actinide sent to waste, material held in buffers, and, for
-    once-through, minor actinide stranded in unprocessed inventory.}
+    \caption{Actinide mass balance relative to the \(103.8~\mathrm{t}\) of minor
+    actinide initially present in the accessible inventory at the end of the
+    100-year minor-actinide-only runs. ``Undestroyed descendant actinide''
+    includes surviving minor actinides, actinides produced by transmutation,
+    material routed to waste, and material held in facility buffers; it is not
+    the mass of usable minor-actinide feed remaining.}
     \label{tab:results-ma-fate}
     \begin{tabular}{p{0.42\textwidth} p{0.22\textwidth} p{0.22\textwidth}}
         \hline
         \textbf{Disposition} & \textbf{Once-through} & \textbf{Recycle} \\
         \hline
-        Actinide destroyed (fissioned) & \(33.5~\mathrm{t}\) & \(55.8~\mathrm{t}\) \\
-        Actinide remaining             & \(70.3~\mathrm{t}\) & \(48.0~\mathrm{t}\) \\
+        Net actinide destruction          & \(33.5~\mathrm{t}\) & \(55.8~\mathrm{t}\) \\
+        Undestroyed descendant actinide     & \(70.3~\mathrm{t}\) & \(48.0~\mathrm{t}\) \\
         \hline
-        National inventory             & \(103.8~\mathrm{t}\) & \(103.8~\mathrm{t}\) \\
+        Initial accessible MA inventory     & \(103.8~\mathrm{t}\) & \(103.8~\mathrm{t}\) \\
         \hline
     \end{tabular}
 \end{table}
@@ -502,7 +518,7 @@ above any minor actinide. This is a direct consequence of the scarcity documente
 in Section~\ref{sec:results-baseline}. Because minor actinide is only about
 \(0.12\%\) of the spent fuel, extracting the roughly \(100~\mathrm{t}\) the burner
 consumes requires separations to process on the order of the entire drawn
-inventory---tens of thousands of tonnes of spent fuel---and the uranium and fission
+inventory, tens of thousands of tonnes of spent fuel, and the uranium and fission
 products stripped from that fuel dominate the disposal stream. The mass sent to
 disposal is therefore not reduced by the transmutation mission; it is only changed
 in character.
@@ -512,7 +528,7 @@ the figure. Minor actinides are almost absent from the waste: americium, the mos
 abundant minor actinide in the original fuel, does not appear among the major
 waste nuclides at all under recycling, having been recovered and burned. In the
 once-through run the same plot shows a small residual \({}^{241}\mathrm{Am}\) peak,
-which recycling removes---a direct illustration of recovery closing that pathway.
+which recycling removes, a direct illustration of recovery closing that pathway.
 The minor-actinide-only cycle thus succeeds in stripping minor actinide from the
 waste, but does not reduce its volume.
 
@@ -529,7 +545,7 @@ configuration is meant to address.
   \centering
   \includegraphics[width=0.95\textwidth]{figures/case3_ma_recycle_100yr_waste_composition}
   \caption[Waste-stream composition for the minor-actinide-only core.]{Final
-  waste-repository composition for the minor-actinide-only recycling run (Case~3),
+  waste-repository composition for the minor-actinide-only recycling run (ADS~1),
   showing the 25 most abundant nuclides on a logarithmic mass scale; minor
   actinides are highlighted. The stream is dominated by uranium and plutonium
   stripped by separations, while minor actinides are nearly absent, having been
@@ -544,8 +560,8 @@ Where the minor-actinide-only cycle sends plutonium to waste, the \(50/50\)
 configuration returns it to the feed. Figure~\ref{fig:results-case4-recycle-product}
 shows the material discharged from the \gls{ADS} in the \(50/50\) recycling run,
 which separations recovers and blends back into fresh feed. The stream is led by
-plutonium isotopes---surviving and bred \({}^{239}\mathrm{Pu}\),
-\({}^{238}\mathrm{Pu}\), and \({}^{240}\mathrm{Pu}\)---followed by the minor
+plutonium isotopes, surviving and bred \({}^{239}\mathrm{Pu}\),
+\({}^{238}\mathrm{Pu}\), and \({}^{240}\mathrm{Pu}\), followed by the minor
 actinides \({}^{237}\mathrm{Np}\), \({}^{244}\mathrm{Cm}\), \({}^{241}\mathrm{Am}\),
 and their heavier companions, alongside the fission products of the cycle. By
 recovering the plutonium as well as the minor actinides, the \(50/50\) cycle keeps
@@ -560,7 +576,7 @@ state.
   \centering
   \includegraphics[width=0.95\textwidth]{figures/case4_puma_recycle_100yr_ads_product}
   \caption[Recovered discharge stream for the \(50/50\) core.]{Composition of the
-  material discharged from the \gls{ADS} in the \(50/50\) recycling run (Case~4),
+  material discharged from the \gls{ADS} in the \(50/50\) recycling run (ADS~2),
   showing the 25 most abundant nuclides on a logarithmic mass scale; minor
   actinides are highlighted. Plutonium leads the recovered stream, followed by the
   minor actinides and fission products, all of which recycling returns to the
@@ -574,8 +590,8 @@ state.
 Taken together, these results qualify what transmutation achieves for the national
 inventory. Over a century, even the more favorable recycling configuration
 destroys only about half of the accessible minor actinide, and it does so at the
-cost of processing essentially the entire spent-fuel inventory, the bulk of which---
-uranium, fission products, and, for the minor-actinide-only cycle, plutonium---
+cost of processing essentially the entire spent-fuel inventory, the bulk of which, 
+uranium, fission products, and, for the minor-actinide-only cycle, plutonium, 
 still requires disposal. The mission changes the isotopic character of the waste
 by removing minor actinide, which is the component that dominates its long-term
 radiotoxicity and heat load; it does not reduce the mass or volume requiring a
@@ -607,8 +623,8 @@ constraints. Two findings dominate, and both point the same way.
 
 The central result is that a minor-actinide transmutation mission is limited by
 the availability of its feed rather than by installed reactor capacity. The
-accessible minor-actinide inventory is \(103.8~\mathrm{t}\)---under four loadings
-of a single \(27~\mathrm{t}\) core---so the binding question is not how much power
+accessible minor-actinide inventory is \(103.8~\mathrm{t}\), under four loadings
+of a single \(27~\mathrm{t}\) core, so the binding question is not how much power
 can be deployed but how quickly that finite, dilute inventory can be retrieved,
 separated, and recycled. The minor-actinide-only core makes this concrete: it is
 feed-limited, stalling after three cores once-through or five with recycling
@@ -625,15 +641,15 @@ inventory represents on the order of \(90\) unit-years of full-power operation.
 Distributed over a 30-year mission this is roughly three units' worth of
 destruction capacity; a single unit would require most of a century, and the
 feed-limited minor-actinide core cannot in practice run at full duty for that long.
-This is not a precise fleet-sizing---it omits reprocessing losses, retrieval and
-transport logistics, and the duty-factor penalty the feed limit itself imposes---but
+This is not a precise fleet-sizing, it omits reprocessing losses, retrieval and
+transport logistics, and the duty-factor penalty the feed limit itself imposes, but
 it establishes the order of magnitude: the transmutation of the national
 minor-actinide inventory is a task for a handful of high-power units over decades,
 and its pace is set by fuel handling rather than by how many units are built.
 
 The \(50/50\) configuration escapes the feed limit, but only by changing the
-mission. By co-burning plutonium---ten times more abundant in the inventory than
-minor actinide---the small, fast-cycling core stays fed for the full century at a
+mission. By co-burning plutonium, ten times more abundant in the inventory than
+minor actinide, the small, fast-cycling core stays fed for the full century at a
 \(85\%\) duty factor and destroys \(91.8~\mathrm{t}\) of actinide, far more than the
 minor-actinide core's \(55.8~\mathrm{t}\)
 (Section~\ref{subsec:results-ads-cases}). But roughly half of that is plutonium, so
@@ -649,8 +665,8 @@ as feed.
 The second finding concerns what the mission does to the waste. Because minor
 actinide is only \(0.12\%\) of the spent fuel, extracting the roughly
 \(100~\mathrm{t}\) the burner consumes requires separations to process on the order
-of the entire drawn inventory, and the uranium, fission products, and---for the
-minor-actinide-only cycle---plutonium stripped from that fuel dominate the disposal
+of the entire drawn inventory, and the uranium, fission products, and, for the
+minor-actinide-only cycle, plutonium stripped from that fuel dominate the disposal
 stream (Section~\ref{subsec:results-fate-waste}). The transmutation mission thus
 does not reduce the mass or volume destined for a repository. What it changes is the
 waste's isotopic character: it removes minor actinide, the component that dominates
@@ -679,8 +695,8 @@ appropriate for a fuel-cycle study, where the quantity of interest is the mass
 transmuted per core rather than the detailed in-core physics, and the per-cycle
 rate was shown to agree with an independent fission-energy balance to within a few
 percent (Section~\ref{subsec:results-ads-burn}). But it inherits the assumptions of
-the underlying cases---a single homogeneous fuel region, a fixed geometry, and a
-library spanning only the two representative feeds used here---and it cannot capture
+the underlying cases, a single homogeneous fuel region, a fixed geometry, and a
+library spanning only the two representative feeds used here, and it cannot capture
 behavior outside the tabulated cases. A core whose composition drifts far from any
 library case is matched to the nearest one rather than modeled directly, and the
 constant per-cycle burn fraction is a consequence of irradiating every core to the
