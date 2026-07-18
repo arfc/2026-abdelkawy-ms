@@ -15,6 +15,12 @@
 *.glo
 *.ist
 *.run.xml
+*.acr
+*.alg
+*.bbl-SAVE-ERROR
+*.bcf-SAVE-ERROR
+*.glg
+*.gls
 
 # Vim swap files
 *.swp

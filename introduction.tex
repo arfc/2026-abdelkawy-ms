@@ -89,7 +89,8 @@ available for transmutation and the characteristics of the inventory that
 remains untreated.
 
 Recent inventory databases make a more realistic representation possible.
-The STANDARDS~5.0.1 database contains assembly-level information describing
+The \gls{STANDARDS}~5.0.1 database\cite{peterson_unf-st&dards_2017,peterson_additional_2017}
+contains assembly-level information describing
 the U.S. commercial spent-fuel inventory, including attributes such as
 discharge date, burnup, initial enrichment, mass, and calculated isotopic
 composition. This level of detail creates an opportunity to treat the
@@ -127,7 +128,7 @@ Two new facility archetypes are developed for this purpose. The
 \texttt{us\_inventory} archetype represents individual U.S. spent-fuel
 assemblies as selectable material resources. Each assembly retains metadata
 including its heavy-metal mass, discharge date, burnup, initial enrichment,
-and isotopic composition derived from \gls{STANDARDS}~5.0.1 \cite{peterson_unf-st&dards_2017,peterson_additional_2017}.
+and isotopic composition derived from \gls{STANDARDS}~5.0.1.
 Rather than collapsing these records into one average composition, the facility supplies
 material through the \Cyclus Dynamic Resource Exchange according to
 user-defined throughput limits and inventory-selection policies.
