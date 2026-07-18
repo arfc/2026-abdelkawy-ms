@@ -42,7 +42,7 @@ reactor itself has been permanently shut down. The result is a distributed
 inventory that must eventually be transported, consolidated, processed, or
 disposed of\cite{carter_banerjee_inventory_2024}.
 
-As of the end of 2022, approximately \(91{,}000\) \gls{MTU} from commercial
+Approximately \(91{,}000\) \gls{MTU} from commercial
 pressurized-water reactors and boiling-water reactors
 had been permanently discharged in the United States. This inventory grows by
 roughly 2,000 \gls{MTU} per year as operating reactors discharge fuel \cite{GC-859},
@@ -150,15 +150,26 @@ burnup and initial enrichment for U.S. light-water-reactor discharges between
 fuel follow somewhat different histories, both exhibit the same broad trend
 toward higher enrichment and higher discharge burnup.
 
-% \begin{figure}[htbp]
-%     \centering
-%     \includegraphics[width=\textwidth]
-%         {figures/annual_burnup_enrichment.png}
-%     \caption{The annual average discharge burnup and initial
-%     \ce{^{235}U} enrichment of U.S. light-water-reactor fuel increased
-%     substantially between 1968 and 2022 \cite{carter_banerjee_inventory_2024}.}
-%     \label{fig:annual-burnup-enrichment}
-% \end{figure}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]
+        {figures/burnup_enrichment.png}
+    \caption{The annual average discharge burnup and initial
+    \ce{^{235}U} enrichment of U.S. light-water-reactor fuel increased
+    substantially between 1968 and 2022 \cite{carter_banerjee_inventory_2024}.}
+    \label{fig:annual-burnup-enrichment}
+\end{figure}
+
+
+\begin{figure}[htbp]
+    \begin{center}
+        \includegraphics[width=\textwidth]{figures/assemblies.png}
+    \end{center}
+        \caption{Burnup (GWd/MTHM) and initial enrichment (\% $^{235}U$) distributions
+        for spent nuclear fuel assemblies in the \glspl{LWR} inventory through
+        December 2022 \cite{carter_spent_2023}.}
+    \label{fig4}
+\end{figure}
 
 Higher burnup changes the isotopic composition of discharged fuel. During
 irradiation, neutron capture in \ce{^{238}U} produces plutonium isotopes, while
@@ -254,15 +265,15 @@ simulation environment, the agent interface connects the kernel to agent
 models, and independently developed archetype libraries provide the
 behavior of the simulated regions, institutions, and facilities.
 
-% \begin{figure}[htbp]
-%     \centering
-%     \includegraphics[width=0.75\textwidth]
-%         {figures/cyclus_architecture.png}
-%     \caption{The \Cyclus simulation architecture separates the core kernel
-%     from dynamically loaded region, institution, and facility archetypes
-%     through the Agent \gls{API}. Reproduced from \cite{huff_fundamental_2016}.}
-%     \label{fig:cyclus-architecture}
-% \end{figure}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.75\textwidth]
+        {figures/Cyclus.png}
+    \caption{The \Cyclus simulation architecture separates the core kernel
+    from dynamically loaded region, institution, and facility archetypes
+    through the Agent \gls{API}. Reproduced from \cite{huff_fundamental_2016}.}
+    \label{fig:cyclus-architecture}
+\end{figure}
 
 
 \subsection{Materials and Decay}

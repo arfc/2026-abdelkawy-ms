@@ -1,1 +1,793 @@
-methodology.tex
+\section{Overview of the Simulation Approach}
+\label{sec:method-overview}
+
+The simulations in this work are performed with \Cyclus, the agent-based
+nuclear fuel cycle simulator introduced in Chapter~\ref{ch:background}. Two
+facility archetypes were developed within the \texttt{einstein} archetype
+library: \texttt{us\_inventory}, which represents the United States inventory of
+\gls{UNF} at the resolution of individual assemblies, and \texttt{ads}, which
+represents an accelerator-driven subcritical burner. These are combined with
+facilities from the \Cycamore library---\texttt{Separations} to partition
+discharged fuel into product and waste streams, \texttt{Mixer} to blend separated
+streams into a burner feed, and \texttt{Sink} to receive final waste---to form a
+complete transmutation fuel cycle, shown in Figure~\ref{fig:flowsheet}.
+
+\begin{figure}[htbp]
+  \centering
+  % \includegraphics[width=0.9\textwidth]{figures/flowsheet}
+  \caption[Fuel cycle flowsheet used in this work.]{Fuel cycle flowsheet used
+  in this work. The \texttt{us\_inventory} facility supplies discharged
+  assemblies to a \texttt{Separations} facility; separated material is
+  irradiated in the \texttt{ads} facility, and the resulting streams are
+  recycled or sent to waste.}
+  \label{fig:flowsheet}
+\end{figure}
+
+The remainder of this chapter describes each archetype in turn---
+\texttt{us\_inventory} in Section~\ref{sec:us-inventory-archetype} and
+\texttt{ads} in Section~\ref{sec:ads-archetype}---and then defines the specific
+scenarios built from them in Section~\ref{sec:simulation-scenarios}.
+
+All scenarios share a common set of simulation-level settings. Time advances in
+monthly steps of \(30.4375~\mathrm{d}\), beginning in January~2025, over a
+horizon of either 30 years (360 steps) or 100 years (1200 steps). Radioactive
+decay is enabled at the simulation level through the \Cyclus control block with
+decay set to \texttt{lazy}, so that material compositions are decayed on demand
+over the multi-decade horizon rather than at every time step
+\cite{huff_fundamental_2016}. The full set of runs and their per-scenario
+parameters is given in Section~\ref{sec:simulation-scenarios}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{The \texttt{us\_inventory} Archetype}
+\label{sec:us-inventory-archetype}
+
+The \texttt{us\_inventory} archetype represents the existing U.S. \gls{UNF}
+inventory as an active material supplier. Rather than collapsing the national
+inventory into a single resource with a prescribed mass and representative
+composition, it preserves individual assembly records, because the U.S.
+inventory is heterogeneous and the order in which assemblies are selected changes
+the mass and isotopic composition delivered to downstream facilities.
+
+Each assembly is stored as a separate inventory bin with its own mass, operating
+history, storage information, composition, and geographic provenance. During a
+simulation the facility answers material requests through the \Cyclus \gls{DRE}
+(Chapter~\ref{ch:background}) and selects an eligible assembly according to a
+user-specified policy, reducing that assembly's mass and the total inventory as
+material is supplied. It inherits from \texttt{cyclus::Facility} and
+\texttt{cyclus::toolkit::CommodityProducer}, so it acts as both a facility agent
+and a producer of a configured output commodity. The facility performs no
+scheduled action each timestep; all of its behavior is triggered either when the
+input data are loaded at initialization or when it participates in resource
+exchange.
+
+\subsection{Purpose and Assembly-Level Data Source}
+\label{subsec:us-inventory-data}
+
+The source data are assembly-level records derived from \gls{STANDARDS}~5.0.1,
+which associates individual U.S. spent-fuel assemblies with facility, storage,
+irradiation-history, and calculated isotopic information. This detail
+distinguishes assemblies that would otherwise be merged into a facility- or
+national-average composition
+\cite{peterson_additional_2017,abdelkawy_summary_2025}.
+
+For the simulations in this thesis, the \gls{STANDARDS} data were provided as a
+directory of 75 line-delimited files, one per represented facility. The file
+count is not hard-coded: the \texttt{data\_dir} parameter names a directory, and
+every file whose name ends in \texttt{.txt} or contains \texttt{.jsonl} is read,
+so the archetype can run on a subset of the database without recompilation.
+
+Each nonempty line is one assembly record, converted into assembly metadata and a
+nuclide mass map. Because the export wraps each dictionary-like record in an outer
+JSON string, a purpose-built parser removes that wrapper and accepts both single-
+and double-quoted strings. It reads the facility name, storage-location name,
+assembly identifier, storage type, discharge year, initial enrichment, maximum
+burnup, initial uranium mass, and a dictionary of nuclide masses in grams.
+Unrecognized fields are ignored, and records with no nonzero composition are
+skipped.
+
+The nuclide names are converted to the integer \texttt{ZZAAAM} identifiers used by
+\Cyclus and assembled into a \texttt{cyclus::Composition}; the total assembly mass
+is converted from grams to kilograms and stored with the record. Each assembly is
+held in a \texttt{Bin} structure, summarized in Table~\ref{tab:usinv-bin}.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Fields stored in each \texttt{Bin} structure.}
+    \label{tab:usinv-bin}
+    \begin{tabular}{p{0.34\textwidth} p{0.58\textwidth}}
+        \hline
+        \textbf{Field} & \textbf{Description} \\
+        \hline
+        \texttt{assembly\_id} & Unique internal key for the assembly. \\
+        \texttt{orig\_id}     & Original database assembly identifier. \\
+        Facility, location    & Source facility and storage-location names. \\
+        Storage type          & Wet or dry storage. \\
+        Available mass        & Current material mass, in kilograms. \\
+        Discharge year        & Year the assembly was discharged. \\
+        Maximum burnup        & Reported maximum burnup. \\
+        Initial enrichment    & Initial uranium enrichment. \\
+        Initial uranium mass  & Initial mass of uranium. \\
+        Derived fractions     & Fissile, plutonium, and minor-actinide
+        mass fractions. \\
+        Coordinates           & Latitude and longitude of the source facility. \\
+        Composition           & Complete \Cyclus composition of the assembly. \\
+        \hline
+    \end{tabular}
+\end{table}
+
+Because the original identifier is not unique across the dataset, the archetype
+builds an internal key from the facility name, storage location, original
+identifier, and load position, stored in \texttt{assembly\_id}; the raw value is
+kept in \texttt{orig\_id}. Each bin's available mass starts as the sum of its
+reported nuclide masses, and a running total tracks the material remaining in the
+facility.
+
+Three composition fractions used by the selection policies are computed once at
+load time. For assembly \(i\) with total mass \(m_i\) and nuclide mass
+\(m_{X,i}\) for nuclide \(X\), the fissile mass fraction is
+
+\begin{equation}
+    f_{\mathrm{fissile},i}
+    =
+    \frac{
+        m_{^{233}\mathrm{U},i}
+        + m_{^{235}\mathrm{U},i}
+        + m_{^{239}\mathrm{Pu},i}
+        + m_{^{241}\mathrm{Pu},i}
+    }{m_i},
+    \label{eq:usinv-fissile-fraction}
+\end{equation}
+
+where the numerator sums the masses of \({}^{233}\mathrm{U}\),
+\({}^{235}\mathrm{U}\), \({}^{239}\mathrm{Pu}\), and \({}^{241}\mathrm{Pu}\) in
+assembly \(i\), and \(m_i\) is its total mass. The total plutonium mass fraction
+is
+
+\begin{equation}
+    f_{\mathrm{Pu},i}
+    =
+    \frac{\displaystyle\sum_{a}m_{^{a}\mathrm{Pu},i}}{m_i},
+    \label{eq:usinv-pu-fraction}
+\end{equation}
+
+where \(a\) runs over all plutonium isotopes present in assembly \(i\). The
+minor-actinide mass fraction is
+
+\begin{equation}
+    f_{\mathrm{MA},i}
+    =
+    \frac{
+        \displaystyle
+        \sum_{a}m_{^{a}\mathrm{Np},i}
+        + \sum_{a}m_{^{a}\mathrm{Am},i}
+        + \sum_{a}m_{^{a}\mathrm{Cm},i}
+    }{m_i},
+    \label{eq:usinv-ma-fraction}
+\end{equation}
+
+where \(a\) runs over all isotopes of neptunium, americium, and curium in
+assembly \(i\). These fractions are precomputed so the selection policies need not
+traverse the full nuclide composition on every request.
+
+The required inputs are the output commodity, \texttt{outcommod}, and the
+assembly-data directory, \texttt{data\_dir}. An optional maximum throughput,
+\texttt{throughput\_kg}, in kilograms per time step, is effectively unlimited by
+default but can be reduced to represent a constraint on inventory retrieval,
+transportation, or processing.
+
+\subsection{Assembly Provenance and Geographic Coordinates}
+\label{subsec:us-inventory-provenance}
+
+Preserving assembly provenance connects inventory-selection results to later
+transportation, siting, and infrastructure analyses. The \gls{STANDARDS} records
+identify each assembly's facility and storage location but not its coordinates,
+so an optional SQLite database associates a facility name with latitude and
+longitude.
+
+The database path is supplied through \texttt{coordinates\_file}. If it is empty,
+the archetype still runs but every bin keeps the default pair \((0,0)\). When a
+database is provided, it is opened read-only and queried for the facility name,
+taking an exact match where one exists and otherwise a prefix match. All
+assemblies from a facility share one coordinate pair, cached after the first
+lookup. If no entry matches, the archetype warns and leaves that facility at
+\((0,0)\).
+
+Every completed transfer is recorded in a custom \Cyclus output table,
+\texttt{us\_inventorySupply}, with one row per supplied trade
+(Table~\ref{tab:usinv-supply}). The transferred material separately carries the
+composition built from the selected bin, so a transaction can be traced to both
+its source assembly and its material composition.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Columns written to the \texttt{us\_inventorySupply} output table.}
+    \label{tab:usinv-supply}
+    \begin{tabular}{p{0.34\textwidth} p{0.58\textwidth}}
+        \hline
+        \textbf{Column} & \textbf{Description} \\
+        \hline
+        Agent ID          & Identifier of the supplying agent. \\
+        Time              & Simulation time step of the transfer. \\
+        Facility          & Source facility name. \\
+        Storage location  & Source storage-location name. \\
+        Storage type      & Wet or dry storage. \\
+        Assembly ID       & Original assembly identifier. \\
+        Initial uranium   & Initial uranium mass of the assembly. \\
+        Latitude, longitude & Coordinates of the source facility. \\
+        Quantity          & Mass supplied in the trade. \\
+        Selection policy  & Policy in force for the simulation. \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsection{Assembly-Selection Policies}
+\label{subsec:us-inventory-policies}
+
+The archetype's principal methodological feature is its ability to choose among
+individual assemblies by explicit ranking policies. In resource exchange the
+solver decides which offers and requests match, but the supplier still chooses
+which physical resource fulfills an accepted trade; \texttt{us\_inventory} uses
+that supplier-side choice to model different assumptions about access to the
+legacy inventory.
+
+The policy is set through \texttt{selection\_policy} and checked at
+initialization, where an unrecognized value stops the simulation with a
+descriptive input error. For each trade the archetype scans the eligible bins and
+keeps the one ranked highest under the active criterion, skipping empty bins and
+bins without a valid composition. Table~\ref{tab:usinv-selection-policies} lists
+the 15 policies.
+
+\begin{table}[p]
+    \centering
+    \caption{Assembly-selection policies implemented by the
+    \texttt{us\_inventory} archetype. Each policy ranks the eligible
+    assemblies before a trade is fulfilled.}
+    \label{tab:usinv-selection-policies}
+    \footnotesize
+    \begin{tabular}{p{0.34\textwidth} p{0.58\textwidth}}
+        \hline
+        \textbf{Policy} & \textbf{Assembly selected} \\
+        \hline
+        \texttt{first}                    & First eligible bin in load order; a
+        baseline that does not rank by a physical property. \\
+        \texttt{older}                    & Smallest discharge year. \\
+        \texttt{newer}                    & Largest discharge year. \\
+        \texttt{highest\_burnup}          & Largest reported maximum burnup. \\
+        \texttt{lowest\_burnup}           & Smallest reported maximum burnup. \\
+        \texttt{highest\_enrichment}      & Largest initial enrichment. \\
+        \texttt{lowest\_enrichment}       & Smallest initial enrichment. \\
+        \texttt{highest\_initial\_uranium}& Largest initial uranium mass. \\
+        \texttt{lowest\_initial\_uranium} & Smallest initial uranium mass. \\
+        \texttt{highest\_fissile}         & Largest fissile fraction
+        (Eq.~\ref{eq:usinv-fissile-fraction}). \\
+        \texttt{lowest\_fissile}          & Smallest fissile fraction. \\
+        \texttt{highest\_plutonium}       & Largest plutonium fraction
+        (Eq.~\ref{eq:usinv-pu-fraction}). \\
+        \texttt{lowest\_plutonium}        & Smallest plutonium fraction. \\
+        \texttt{highest\_minor\_actinide} & Largest minor-actinide fraction
+        (Eq.~\ref{eq:usinv-ma-fraction}). \\
+        \texttt{lowest\_minor\_actinide}  & Smallest minor-actinide fraction. \\
+        \hline
+    \end{tabular}
+\end{table}
+
+Ranking keeps the first eligible bin as the initial candidate and replaces it
+only when a later bin is strictly better under the criterion, so ties keep their
+load-order priority.
+
+Two optional inputs bias the pool toward a particular source.
+\texttt{preferred\_facility} names a specific facility, and \texttt{storage\_type}
+restricts the pool to \texttt{wet} or \texttt{dry} storage. These filters are
+preferential rather than exclusive: the matching assemblies are searched first,
+and if they cannot supply a trade the rest of the inventory is searched, with a
+warning the first time this fallback occurs. This keeps the archetype consistent
+with the \gls{DRE}, which expects a bidding facility to remain able to supply an
+accepted trade.
+
+Whether a request may be partially filled is governed by \texttt{allow\_partial}.
+Selection first requires that a bin cover the full requested mass; only if none
+can, and \texttt{allow\_partial} is true, is a smaller quantity permitted.
+Each accepted trade is drawn from a single bin---the archetype does not combine
+undersized assemblies---which keeps a one-to-one relationship between each trade
+response and the assembly recorded in \texttt{us\_inventorySupply}.
+
+\subsection{Material Bidding, Trading, and Accounting}
+\label{subsec:us-inventory-accounting}
+
+Bidding and trading are handled in two stages: the facility first advertises how
+much material it can offer, and then, once trades are awarded, withdraws a
+specific assembly for each one.
+
+When there are requests on the output commodity, the facility bids. Because the
+source filters are preferential, the whole remaining inventory is eligible, so the
+facility can fall back to nonmatching assemblies. The compositions of the eligible
+bins are combined into a single mass-weighted bid composition,
+
+\begin{equation}
+    \mathbf{x}_{\mathrm{bid}}
+    =
+    \frac{
+        \displaystyle\sum_{i \in \mathcal{E}} m_i\,\mathbf{x}_i
+    }{
+        \displaystyle\sum_{i \in \mathcal{E}} m_i
+    },
+    \label{eq:usinv-bid-composition}
+\end{equation}
+
+where \(\mathcal{E}\) is the set of eligible bins, \(m_i\) is the remaining mass of
+bin \(i\), and \(\mathbf{x}_i\) is its vector of nuclide mass fractions. The
+maximum mass offered is
+
+\begin{equation}
+    M_{\mathrm{offer}}
+    =
+    \min\!\left(
+        M_{\mathrm{eligible}},\;
+        M_{\mathrm{throughput}}
+    \right),
+    \label{eq:usinv-offer-capacity}
+\end{equation}
+
+where \(M_{\mathrm{eligible}} = \sum_{i \in \mathcal{E}} m_i\) is the total mass of
+the eligible pool and \(M_{\mathrm{throughput}}\) is the configured
+per-time-step throughput. This value enters the portfolio as a capacity
+constraint. With partial fulfillment disabled, the archetype does not bid on a
+request larger than it can offer.
+
+The bid composition represents the available pool but does not replace
+policy-based selection of the source assembly. After the solver awards trades,
+each one is matched to a source bin by the procedure in
+Section~\ref{subsec:us-inventory-policies}, so the material returned is built from
+the selected assembly's composition, not the averaged bid composition.
+
+Each accepted trade is limited by the requested quantity, the selected bin's
+remaining mass, and the throughput remaining in the step, and fulfillment stops
+once the throughput or the inventory is exhausted. After each response the
+archetype updates
+
+\begin{align}
+    m_{i,t+1}
+    &= m_{i,t} - m_{\mathrm{supplied}},
+    \label{eq:usinv-bin-update} \\
+    M_{\mathrm{inv},t+1}
+    &= M_{\mathrm{inv},t} - m_{\mathrm{supplied}},
+    \label{eq:usinv-inv-update} \\
+    R_{t+1}
+    &= R_{t} - m_{\mathrm{supplied}},
+    \label{eq:usinv-throughput-update}
+\end{align}
+
+where \(m_{i,t}\) is the available mass of the selected assembly \(i\),
+\(M_{\mathrm{inv},t}\) is the total mass remaining in the facility, \(R_t\) is the
+throughput remaining in the current step, and \(m_{\mathrm{supplied}}\) is the mass
+delivered by the trade.
+
+The per-assembly remaining mass is also persisted as archetype state, one value
+per loaded assembly. Restarting from a checkpoint reloads the assembly metadata
+and compositions from the source files, overwrites their initial masses with the
+persisted values, and rebuilds the inventory total from them. The simulation is
+stopped if the number of persisted values does not match the number of loaded
+bins, since that indicates the data directory changed after the checkpoint.
+
+After each successful transaction the archetype appends a row to
+\texttt{us\_inventorySupply}, giving a time-dependent history of which assemblies
+were selected, where they originated, how much they supplied, and which policy
+produced that sequence---the basis for the policy comparisons in
+Chapter~\ref{ch:results}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The \texttt{ads} Archetype}
+\label{sec:ads-archetype}
+
+The archetype represents an \gls{ADS} operating as a transuranic
+burner. It receives an actinide-bearing feed from upstream facilities,
+accumulates one core loading, irradiates it for a prescribed cycle, and
+discharges the surviving actinides together with the fission products generated
+during the cycle. Like \texttt{us\_inventory}
+(Section~\ref{sec:us-inventory-archetype}), it inherits from
+\texttt{cyclus::Facility} and \texttt{cyclus::toolkit::CommodityProducer} and so
+is both a facility agent and a producer of an output commodity; unlike
+\texttt{us\_inventory}, it is time-dependent, advancing an irradiation cycle each
+timestep and participating in the \gls{DRE} on both the request and the bid side.
+
+\subsection{Reduced-Order Transmutation Model}
+\label{subsec:ads-reduced-order}
+
+Solving neutron transport and depletion inside a multi-decade fuel-cycle
+simulation, for every cycle of every burner, is computationally intractable. The
+\texttt{ads} archetype therefore uses a \emph{reduced-order} model: the physics is
+computed once, offline, by high-fidelity depletion calculations, and at runtime
+the archetype performs only a case lookup and an interpolation. This mirrors the
+recipe-based treatment of irradiation established in \Cyclus
+\cite{huff_fundamental_2016}.
+
+The offline physics is a library of \textsc{Serpent} depletion cases
+(Section~\ref{subsec:serpent-cases}), each recording the time evolution of the
+full nuclide inventory of a fixed loading irradiated at constant power. The
+library is loaded once when the agent enters the simulation and held in memory.
+
+\paragraph{Buffers and cycle.}
+The facility holds three material buffers: \texttt{feed} accumulates received
+material, \texttt{core} holds the loading under irradiation, and \texttt{product}
+holds discharged material awaiting trade. The feed and core buffers share the
+\texttt{capacity} parameter---the mass of one core---while the product buffer is
+unbounded. Operation is a two-state batch cycle keyed on whether the core is
+occupied. An empty core is refueling; once \texttt{refuel\_time} has elapsed and
+the feed holds a full core, one \texttt{capacity} of feed is loaded. An occupied
+core irradiates until its cycle counter reaches \texttt{cycle\_time}, at which
+point it is discharged. The composition is not altered during irradiation---the
+whole transformation is applied as a single transition at discharge---because the
+core does not participate in resource exchange while loaded. Two persisted
+counters track progress through the irradiation and refueling periods so the
+operating state survives a simulation snapshot.
+
+\paragraph{Feed requests.}
+Feed may be requested on several input commodities, listed in \texttt{incommods}
+with optional per-commodity preferences. The archetype requests the space
+available in its feed buffer, and the per-commodity requests are mutually
+exclusive alternatives in one portfolio, so it draws one core's worth from
+whichever supplier the exchange prefers rather than the full amount from each. An
+optional \texttt{feed\_recipe} may be attached; when it is empty, the request is
+for blank material and the archetype accepts whatever composition the supplier
+offers. This is the mode used here, since the feed composition varies with the
+inventory-selection policy and with any upstream separations.
+
+\paragraph{Simulation time to irradiation time.}
+\Cyclus advances in timesteps, whereas the \textsc{Serpent} cases are tabulated in
+irradiation days. The parameter \texttt{days\_per\_step}, $\Delta_d$, converts
+between them, so the irradiation time read at discharge is
+
+\begin{equation}
+    t_{\mathrm{irr}} = n_{\mathrm{cycle}}\,\Delta_d ,
+    \label{eq:ads-tirr}
+\end{equation}
+
+where $n_{\mathrm{cycle}}$ is the cycle length in timesteps
+(\texttt{cycle\_time}). If $\Delta_d$ is not set, it is derived from the timestep
+duration. This is what gives the cycle length physical meaning: a longer cycle
+addresses a later, more-depleted point on the trajectory.
+
+\paragraph{Case selection.}
+At discharge the core is matched to the library case that best represents it. The
+core is reduced to the mass fractions of three actinide groups, normalized to the
+total actinide mass:
+
+\begin{equation}
+    f_{\mathrm{MA}} = \frac{m_{\mathrm{Np}}+m_{\mathrm{Am}}+m_{\mathrm{Cm}}}
+                           {m_{\mathrm{act}}},
+    \quad
+    f_{\mathrm{Pu}} = \frac{m_{\mathrm{Pu}}}{m_{\mathrm{act}}},
+    \quad
+    f_{\mathrm{U}}  = \frac{m_{\mathrm{U}}}{m_{\mathrm{act}}},
+    \label{eq:ads-fractions}
+\end{equation}
+
+where each element mass ($m_{\mathrm{Np}}$, $m_{\mathrm{Am}}$, $m_{\mathrm{Cm}}$,
+$m_{\mathrm{Pu}}$, $m_{\mathrm{U}}$) is summed over all isotopes of that element,
+$m_{\mathrm{act}} = \sum_{Z\geq 89} m$ is the total actinide mass, and the minor
+actinides are neptunium, americium, and curium. Nuclides below $Z = 89$ are
+excluded, so fission products in recycled feed do not affect selection. The same
+fractions are computed for each case from its initial ($t=0$) actinide vector.
+Each case $c$ is scored by
+
+\begin{equation}
+    S_c = w_P\,\frac{\lvert P - P_c\rvert}{\max(P,\,P_c)}
+          + \sum_{g \in \{\mathrm{MA},\,\mathrm{Pu},\,\mathrm{U}\}}
+            \lvert f_g - f_{g,c}\rvert ,
+    \label{eq:ads-score}
+\end{equation}
+
+where $P$ and $P_c$ are the facility and case powers, $f_g$ and $f_{g,c}$ are the
+core and case group fractions, and $w_P = 10$ weights the power term. The
+lowest-scoring case wins; the large $w_P$ makes the power tier dominate so a core
+is not matched across power levels on composition alone. A single nearest case is
+chosen---there is no averaging across cases---and interpolation happens only along
+that case's time axis.
+
+\paragraph{Composition transformation.}
+The selected case gives nuclide masses $m_n(t_k)$ at tabulated times $t_k$. For
+the interval $[t_{\mathrm{lo}}, t_{\mathrm{hi}}]$ bracketing $t_{\mathrm{irr}}$,
+each nuclide is linearly interpolated,
+
+\begin{equation}
+    m_n(t_{\mathrm{irr}}) = (1-\alpha)\,m_n(t_{\mathrm{lo}})
+                          + \alpha\,m_n(t_{\mathrm{hi}}),
+    \qquad
+    \alpha = \frac{t_{\mathrm{irr}} - t_{\mathrm{lo}}}
+                  {t_{\mathrm{hi}} - t_{\mathrm{lo}}},
+    \label{eq:ads-interp}
+\end{equation}
+
+over every actinide and fission product the case tracks, and the result becomes
+the discharged composition. Outside the tabulated range the composition is clamped
+to the nearest endpoint rather than extrapolated: depletion saturates as the most
+fissile nuclides are consumed, so a straight-line projection past the last point
+would overpredict burnup and eventually yield negative masses. A cycle that
+routinely runs past the range signals a misconfigured time mapping or a need for
+longer depletion runs, not a case for extrapolation.
+
+\paragraph{Mass balance.}
+The transformed composition holds both surviving actinides and the fission
+products made during irradiation, so mass is conserved to the extent
+\textsc{Serpent} tracks it. With $M(t)$ the total tracked (actinide plus
+fission-product) mass of the case at time $t$, the discharged mass scales from the
+loading $M_{\mathrm{in}}$ by
+
+\begin{equation}
+    R = \min\!\left(1,\ \frac{M(t_{\mathrm{irr}})}{M(0)}\right),
+    \qquad
+    M_{\mathrm{out}} = R\,M_{\mathrm{in}} ,
+    \label{eq:ads-ratio}
+\end{equation}
+
+the clamp at unity preventing a slightly-above-one ratio from creating mass. The
+residual $(1-R)\,M_{\mathrm{in}}$ leaves the simulation as a recorded mass defect,
+representing mass \textsc{Serpent} does not carry in the discharged tables---chiefly
+the mass--energy released in fission, together with any light or untracked
+nuclides. Writing $a_c(t) = M_{\mathrm{act},c}(t)/M_c(t)$ for the actinide fraction
+of the matched case, the destroyed actinide mass reported for the cycle is
+
+\begin{equation}
+    \Delta M_{\mathrm{act}} =
+        M_{\mathrm{in}}\,a_c(0) - M_{\mathrm{out}}\,a_c(t_{\mathrm{irr}}) .
+    \label{eq:ads-destroyed}
+\end{equation}
+
+This is a summary quantity only; the discharged isotopics come directly from
+Equation~\ref{eq:ads-interp}. Discharged material is then offered on the output
+commodity under a capacity constraint equal to the product mass, and accepted
+trades draw from the product buffer for routing to storage, separations, or
+disposal.
+
+\subsection{Serpent Depletion Cases}
+\label{subsec:serpent-cases}
+
+These depletion cases were produced at \gls{UIUC}, and this section documents the
+model they represent so that the archetype's inputs can be interpreted. Each case
+is a continuous-energy Serpent~2 Monte Carlo depletion calculation
+\needcite{leppanenStatusSerpentMonte2025} that tracks the full nuclide inventory
+(\texttt{set inventory all}), producing the time-dependent actinide and
+fission-product mass tables the archetype later reads; the material volumes
+required for depletion normalization are obtained by a Monte Carlo volume
+calculation.
+
+The model is an axisymmetric cylindrical \gls{ADS} core built from
+concentric \(z\)-cylinders, summarized in Table~\ref{tab:serpent-geometry}. A
+central liquid-lead spallation target sits on the core midplane, surrounded by a
+thin structural target wall and, above it, an evacuated beam duct through which
+the proton beam reaches the target. The fuel occupies the annular region around
+the target tube, and the whole assembly is enclosed in structural material and
+an outer container. A vacuum (black) boundary condition is applied at the
+outermost surface, so neutrons leaking past the container are lost. The single
+target, single homogeneous fuel region, and absence of assembly- or pin-level
+detail are consistent with the reduced-order role of these cases: they are
+intended to characterize the bulk transmutation behavior of a core-worth of
+feed, not its detailed spatial power distribution.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Principal regions of the Serpent \gls{ADS} model. Dimensions are
+    taken directly from the input decks; all cylinders are coaxial about the
+    \(z\)-axis.}
+    \label{tab:serpent-geometry}
+    \footnotesize
+    \begin{tabular}{p{0.24\textwidth} p{0.20\textwidth} p{0.20\textwidth} p{0.24\textwidth}}
+        \hline
+        \textbf{Region} & \textbf{Radius (cm)} & \textbf{Axial span (cm)} &
+        \textbf{Material} \\
+        \hline
+        Spallation target & 0--17.5   & 150--210  & Liquid lead \\
+        Beam duct (vacuum) & 0--17.5  & 210--400  & Void \\
+        Target wall        & 17.5--18.5 & 149--400 & Structural \\
+        Fuel               & 18.5--150 & 0--300    & Minor-actinide feed\\
+        Container / structure & 150--250 & \(-100\)--400 & Structural \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsubsection{Fuel Compositions and the Case Set}
+\label{subsubsec:serpent-materials}
+
+The cases differ in the composition loaded into the fuel region, which is what
+makes them a \emph{library} rather than a single run. Each fuel is a transuranic
+feed dispersed in a lead matrix. Two representative cases illustrate the range
+spanned by the library. In one, the feed is essentially pure minor actinide
+dispersed in lead; in another, the feed is an equal split of plutonium and minor
+actinide (a ``50/50'' Pu--MA blend) in lead. These two feeds bracket the
+transmutation regimes of interest: a minor-actinide-only charge maximizes the
+mass of minor actinide destroyed per cycle but is the most reactive to load,
+whereas adding plutonium softens the loading while shifting some of the
+destruction burden onto bred and fissioned plutonium. The initial actinide mass
+of each case, taken from the day-zero row of its actinide-mass table, is the
+quantity the archetype's \texttt{capacity} parameter should reproduce, so that a
+loaded core matches the case it is compared against.
+
+Each case is depleted along a common ``\(\mathrm{Day}~[\mathrm{d}]\)'' time axis.
+The irradiation history is built up from a sequence of chained restart runs: an
+initial segment resolves the first fraction of a day with fine steps (for
+example, cumulative times of \(0.001\), \(0.1\), \(0.2\), and
+\(0.5~\mathrm{d}\)) to capture the rapid early transient in short-lived
+fission products, and each subsequent segment reads the binary restart file
+written by the previous one and advances the total burnup further (for example,
+from \(730\) to \(760~\mathrm{d}\)). Reassembled, these segments give the
+continuous nuclide inventory versus irradiation time that the archetype consumes:
+an actinide-mass table (\texttt{plot\_data\_15\_actinide\_masses\_full.txt} or
+\texttt{plot\_data\_06\_actinide\_masses.txt}), a fission-product-mass table
+(\texttt{plot\_data\_14\_fission\_product\_masses.txt}) on the same axis, and a
+power history (\texttt{plot\_data\_03\_power\_vs\_time.txt}) used for case
+matching. The archetype reads a case's composition at the irradiation time
+implied by the cycle length by linearly interpolating these tables along the
+day axis, so the resolution of the discharged composition is set by the density
+of the Serpent time grid rather than by the \Cyclus time step.
+
+\subsection{Irradiation-Event Recording}
+\label{subsec:ads-events}
+
+Besides the standard \Cyclus tables, the archetype writes a custom
+\texttt{AdsEvents} table so each cycle can be reconstructed without parsing the
+full isotopic history. Every row carries the agent id, time, event type, matched
+case, and a mass value (Table~\ref{tab:ads-events}); the matched case is blank on
+a load, since matching happens at discharge.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Event types recorded in the \texttt{AdsEvents} output table.}
+    \label{tab:ads-events}
+    \begin{tabular}{p{0.26\textwidth} p{0.66\textwidth}}
+        \toprule
+        \textbf{Event} & \textbf{Recorded value} \\
+        \midrule
+        \texttt{Load} & Mass loaded from feed into the core. \\
+        \texttt{Discharge} & Core mass entering the transformation,
+                             $M_{\mathrm{in}}$, before Equation~\ref{eq:ads-ratio};
+                             the matched case is recorded here. \\
+        \texttt{ActinideDestroyed} & Destroyed actinide mass,
+                             Equation~\ref{eq:ads-destroyed}. \\
+        \texttt{FissionProducts} & Fission-product mass in the discharged material. \\
+        \texttt{MassDefect} & Mass not retained, $(1-R)\,M_{\mathrm{in}}$. \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+The three discharge rows are written only when positive. The
+\texttt{ActinideDestroyed} series is the primary performance metric, and its
+cumulative sum gives the actinide mass a facility removes from the fuel cycle. With
+the standard \Cyclus \texttt{Transactions} and \texttt{ExplicitInventory} tables,
+these events close the actinide balance: the actinide initially present equals the
+sum destroyed, held in buffers, and resident downstream.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Simulation Scenarios}
+\label{sec:simulation-scenarios}
+
+The two archetypes developed in this chapter are exercised in a set of
+fuel-cycle simulations that share one flowsheet and differ along three axes: the
+composition burned in the \gls{ADS}, the length of the simulated horizon, and
+whether the discharged material is recycled. Two burner configurations are used,
+corresponding to the two representative Serpent cases of
+Section~\ref{subsec:serpent-cases}: a minor-actinide-only core (Case~3) and a
+\(50/50\) plutonium--minor-actinide core (Case~4). Each configuration is run over
+a 30-year and a 100-year horizon, in a once-through mode and a recycling mode,
+for eight simulations in total.
+
+\subsection{Fuel Cycle Flow}
+\label{subsec:scenario-flowsheet}
+
+Every simulation uses the same chain of facilities. The \texttt{us\_inventory}
+facility supplies discharged assemblies on the \texttt{snf} commodity under the
+\texttt{highest\_minor\_actinide} selection policy
+(Section~\ref{subsec:us-inventory-policies}), so that the assemblies richest in
+neptunium, americium, and curium are drawn first. A \Cycamore
+\texttt{Separations} facility partitions this material: the minor actinides are
+routed to the burner feed, while uranium, plutonium (except in Case~4), and the
+fission products fall to a leftover stream sent to a waste \texttt{Sink}. The
+\gls{ADS} irradiates the separated feed and discharges the surviving actinides
+together with the fission products produced during the cycle. Depending on the
+scenario, that discharge is either sent to a \texttt{Sink} (once-through) or
+returned to \texttt{Separations} (recycling).
+
+The two burner configurations shape the feed differently. For the
+minor-actinide-only core (Case~3), \texttt{Separations} extracts a single stream
+of neptunium, americium, and curium at \(99\%\) efficiency and feeds it directly
+to the \gls{ADS}. For the \(50/50\) core (Case~4), the feed cannot be taken
+straight from separations: the U.S. inventory holds roughly ten times more
+plutonium than minor actinide, so a stream drawn from it is far from an equal
+split. \texttt{Separations} therefore produces two streams---one of minor
+actinides and one of plutonium---and a \Cycamore \texttt{Mixer} blends them in a
+fixed \(0.5/0.5\) mass ratio to reproduce the Case~4 Serpent feed. The
+minor-actinide stream is the limiting one, so surplus plutonium accumulates in
+its buffer; this minor-actinide-limited feed rate is a physical consequence of
+the inventory composition rather than a modeling constraint.
+
+The recycling and once-through modes differ only in the routing of the burner
+discharge. In once-through mode the discharge is a terminal waste stream held in
+a \texttt{Sink}. In recycling mode it is returned to \texttt{Separations}, which
+recovers the surviving minor actinides---and, for Case~4, plutonium---into fresh
+feed, so that actinides make repeated passes through the burner while uranium and
+fission products are removed to waste on each pass.
+
+All simulations share the remaining settings. Time advances in monthly steps of
+\(30.4375~\mathrm{d}\) from a start of January~2025, radioactive decay is
+evaluated lazily over the horizon, and explicit inventory tracking is enabled.
+The inventory, separations, and mixing facilities each operate at a throughput of
+\(250{,}000~\mathrm{kg}\) per step, large enough that material handling does not
+throttle the burner.
+
+\subsection{Simulation Runs}
+\label{subsec:scenario-runs}
+
+The two burner configurations fix the \gls{ADS} and separations parameters
+summarized in Table~\ref{tab:scenario-config}. Each core mass matches the
+day-zero actinide mass of the corresponding Serpent case, so a loaded core maps
+onto the case it is compared against; the cycle lengths differ by more than the
+mass alone, as the large minor-actinide core is irradiated for ten years per
+cycle while the smaller \(50/50\) core is cycled every two years.
+
+\begin{table}[htbp]
+    \centering
+    \caption{\gls{ADS} and separations configuration for the two burner cases.
+    Cycle and refueling times are given in monthly time steps, with the
+    equivalent duration in parentheses.}
+    \label{tab:scenario-config}
+    \footnotesize
+    \begin{tabular}{p{0.30\textwidth} p{0.27\textwidth} p{0.27\textwidth}}
+        \hline
+        \textbf{Parameter} & \textbf{Case 3 (MA only)} &
+        \textbf{Case 4 (50/50 Pu--MA)} \\
+        \hline
+        Initial core mass  & \(27{,}000~\mathrm{kg}\) & \(4{,}418~\mathrm{kg}\) \\
+        Cycle length       & 120 steps (10 yr)       & 24 steps (2 yr) \\
+        Refueling time     & 6 steps (6 mo)          & 4 steps (4 mo) \\
+        Power level        & \(3000~\mathrm{MW}\)    & \(3000~\mathrm{MW}\) \\
+        Separated streams  & Np, Am, Cm              & Np, Am, Cm and Pu \\
+        Feed shaping       & Fed directly            &
+        \Cycamore \texttt{Mixer}, \(0.5/0.5\) \\
+        Serpent case       & \texttt{892\_vt\_ma\_Pb} &
+        \texttt{1.3\_vt\_5050\_puma\_Pb} \\
+        \hline
+    \end{tabular}
+\end{table}
+
+Each configuration is simulated over both horizons and in both modes, giving the
+eight runs listed in Table~\ref{tab:scenario-runs}. Across most of these runs the
+once-through and recycling modes produce nearly identical histories, because the
+burner is cycle-limited rather than feed-limited: within the horizon it completes
+the same number of cores whether or not the discharge is recycled, and the
+recovered material only displaces inventory that was still available. The
+exception is the minor-actinide-only core over the 100-year horizon, where the
+large ten-year core draws down the accessible minor-actinide inventory and
+recycling sustains operation beyond what the once-through supply allows. The
+comparison between recycling and once-through in Chapter~\ref{ch:results}
+therefore focuses on that pair of runs; for the remaining cases a single
+representative run is shown, since the two modes coincide.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Simulation runs. Each burner configuration is run over both
+    horizons and in both fuel-management modes.}
+    \label{tab:scenario-runs}
+    \footnotesize
+    \begin{tabular}{c l l l c}
+        \hline
+        \textbf{Run} & \textbf{Fuel case} & \textbf{Mode} &
+        \textbf{Horizon} & \textbf{Steps} \\
+        \hline
+        1 & MA only      & Once-through & 30 yr  & 360  \\
+        2 & MA only      & Recycle      & 30 yr  & 360  \\
+        3 & MA only      & Once-through & 100 yr & 1200 \\
+        4 & MA only      & Recycle      & 100 yr & 1200 \\
+        5 & 50/50 Pu--MA & Once-through & 30 yr  & 360  \\
+        6 & 50/50 Pu--MA & Recycle      & 30 yr  & 360  \\
+        7 & 50/50 Pu--MA & Once-through & 100 yr & 1200 \\
+        8 & 50/50 Pu--MA & Recycle      & 100 yr & 1200 \\
+        \hline
+    \end{tabular}
+\end{table}

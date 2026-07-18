@@ -82,8 +82,7 @@
 \tikzstyle{arrow} = [thick,->,>=stealth]
 
 \begin{document}
-\title{Example Template \\
-        Guide}
+\title{A Cyclus Framework for Accelerator-Driven Transmutation of the U.S. Spent Nuclear Fuel Inventory}
 \author{Samar Abdelkawy}
 \department{Nuclear, Plasma, Radiological Engineering}
 \msthesis %change it to \phdthesis to set the correct thesis type
@@ -101,16 +100,83 @@
 %% Note that ProQuest truncates their abstracts at 350 words.
 \begin{abstract}
 
-Abstract.
+The transmutation of minor actinides in an accelerator-driven subcritical system
+(ADS) is often proposed as a means of reducing the long-term radiological hazard
+of used nuclear fuel. Evaluating such a mission at the national scale requires
+connecting a realistic description of the existing spent-fuel inventory to a model
+of the burner that would consume it. This thesis develops two facility archetypes
+for the Cyclus fuel cycle simulator to make that connection. The first,
+\texttt{us\_inventory}, represents the U.S. inventory of used fuel at the
+resolution of individual assemblies, drawn from the STANDARDS~5.0.1 dataset, and
+supplies material to downstream facilities according to a choice of ranking
+policies while preserving each assembly's composition and geographic provenance.
+The second, \texttt{ads}, models an accelerator-driven minor-actinide burner using
+precomputed Serpent depletion cases as a reduced-order model, transforming a
+loaded core into its irradiated composition and recording the actinide mass
+destroyed each cycle.
+
+Using these archetypes, a transmutation fuel cycle is simulated for two burner
+configurations---a minor-actinide-only core and a fifty-fifty
+plutonium--minor-actinide core---over 30- and 100-year horizons in once-through
+and recycling modes. The results are governed by the scarcity of the feed: the
+accessible minor-actinide inventory is only about \(104~\mathrm{t}\), fewer than
+four loadings of the large minor-actinide core. As a result, the minor-actinide
+burner is feed-limited, stalling after three cores without recycling and five with
+it, whereas the smaller fifty-fifty core, sustained by the far more abundant
+plutonium, runs continuously across the horizon. The transmutation mission is
+therefore constrained by how quickly its dilute feed can be retrieved, separated,
+and recycled rather than by installed reactor power, and because minor actinide is
+only about \(0.1\%\) of the spent fuel, the mission changes the isotopic character
+of the waste without reducing the mass sent to disposal. The archetypes and the
+assembly-resolved, provenance-preserving results they produce provide a
+foundation for subsequent radiological, economic, and siting analyses of
+accelerator-driven transmutation.
 
 \end{abstract}
 
-\begin{dedication}
-To whomever you want.
-\end{dedication}
-
 \begin{acknowledgments}
-Acks.
+
+I would first like to express my deepest gratitude to my advisor,
+Professor Kathryn D. Huff. Katy has been an exceptionally supportive,
+patient, and generous mentor throughout my graduate studies. Her guidance
+extended far beyond the technical direction of this thesis. She consistently
+made time to listen, encouraged me when the work felt overwhelming, and helped
+me continue moving forward through some of the most difficult stages of this
+degree. Her confidence in me, even at times when I struggled to have that
+confidence in myself, has meant more than I can fully express. I am deeply
+grateful for the opportunity to learn from her, for the independence she gave
+me to grow as a researcher, and for the care and understanding with which she
+has advised me.
+
+I am also sincerely grateful to the members of the Advanced Reactors and Fuel
+Cycles (ARFC) research group and to the broader Cyclus community. ARFC gave
+me a welcoming research home in which to learn nuclear fuel-cycle analysis,
+scientific software development, and the Cyclus framework, and I am thankful
+for the technical discussions, code reviews, and troubleshooting help I received
+from its members. The wider Cyclus community, through its workshops, documentation,
+and open development, built the foundation on which the archetypes in this thesis rest,
+and its openness made it possible for me to contribute to the framework in turn.
+
+This work was completed as part of the Enhanced Integrated Nuclear Systems for
+Transmutation and Efficient Isolation of Nuclides (EINSTEIN) project. I am
+grateful to Professor Angela Di Fulvio and to the broader EINSTEIN research
+team for the opportunity to contribute to a multidisciplinary effort involving
+nuclear data, neutronics, materials, fuel-cycle modeling, and techno-economic
+analysis. Working within this project helped me understand how the individual
+software and modeling contributions developed in this thesis fit into the
+larger challenge of evaluating advanced transmutation systems for used nuclear
+fuel management.
+
+This material is based upon work supported by the U.S. Department of Energy
+Advanced Research Projects Agency--Energy (ARPA-E) NEWTON program under Award
+Number DE-AR0002080, ``Enhanced Integrated Nuclear Systems for Transmutation
+and Efficient Isolation of Nuclides.''
+
+Finally, I am grateful to the friends, colleagues, and family members who
+supported me throughout this degree. Their patience, encouragement, and belief
+in me helped me continue through the many challenges that accompanied this
+work. Completing this thesis would not have been possible without the
+professional and personal support I received from the people around me.
 \end{acknowledgments}
 
 %% The thesis format requires the Table of Contents to come
@@ -168,7 +234,6 @@ Acks.
 \chapter{Conclusions}
 \label{ch:conclusion}
 \input{conclusion.tex}
-Conclusion.
 
 % per Graduate College preference, place the \appendix and the appendices content before the
 % bibliography (here) only if the appendices contain references.
