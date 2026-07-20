@@ -8,7 +8,13 @@
 \usepackage[hyphens]{url}
 \usepackage[bookmarksdepth=3,linktoc=all,colorlinks=true,urlcolor=blue,linkcolor=blue,citecolor=blue]{hyperref}
 \usepackage[capitalize]{cleveref}
-\usepackage[style=ieee]{biblatex}
+\usepackage[
+    backend=biber,
+    bibstyle=ieee,
+    citestyle=numeric-comp,
+    sorting=none
+]{biblatex}
+\renewcommand*{\multicitedelim}{\addcomma}
 % \usepackage{ruledchapters}  % example of compliant heading format, uncomment to use
 \usepackage[acronym,toc]{glossaries}
 \makeglossaries
@@ -81,7 +87,7 @@
 \tikzstyle{arrow} = [thick,->,>=stealth]
 
 \begin{document}
-\title{A Cyclus Framework for Accelerator-Driven Transmutation of the U.S. Spent Nuclear Fuel Inventory}
+\title{Simulation of Accelerator-Driven Transmutation of the U.S. Spent Nuclear Fuel Inventory}
 \author{Samar Abdelkawy}
 \department{Nuclear, Plasma, Radiological Engineering}
 \msthesis %change it to \phdthesis to set the correct thesis type
@@ -122,7 +128,7 @@ accessible minor-actinide inventory is only about \(104~\mathrm{t}\), fewer than
 four loadings of the large minor-actinide core. As a result, the minor-actinide
 burner is feed-limited, stalling after three cores without recycling and five with
 it, whereas the smaller fifty-fifty core, sustained by the far more abundant
-plutonium, runs continuously across the horizon. The transmutation mission is
+plutonium, runs continuously across the simulation. The transmutation mission is
 therefore constrained by how quickly its dilute feed can be retrieved, separated,
 and recycled rather than by installed reactor power, and because minor actinide is
 only about \(0.1\%\) of the spent fuel, the mission changes the isotopic character

@@ -2,10 +2,11 @@
 Nuclear power has supplied the United States with large quantities of
 low-carbon electricity for more than six decades. The fuel discharged from
 those reactors, however, remains a long-term national responsibility. By the
-end of 2022, commercial reactors in the United States had permanently
-discharged roughly \(91{,}000\) \gls{MTU} of \gls{UNF}, and the
+end of 2025, commercial reactors in the United States had permanently
+discharged roughly \(95{,}000\) \gls{MTU} of \gls{UNF}, and the
 inventory continues to grow by approximately \(2{,}000\) \gls{MTU} each year
-\cite{carter_banerjee_inventory_2024}. This material is distributed across
+\cite{inside_2025,carter_banerjee_inventory_2024}. Extrapolating this rate places the
+inventory at approximately \(99{,}000\) \gls{MTU} in 2026. This material is distributed across
 more than one hundred sites in thirty-nine states, including operating nuclear
 power plants, decommissioned reactor sites, and independent spent fuel storage
 installations. Because the United States does not yet operate a permanent
@@ -40,7 +41,7 @@ repository, nor does it remove every radioactive waste stream. It does,
 however, create the possibility of changing the quantity and composition of
 the material that must ultimately be isolated.
 
-\Gls{ADS} have been proposed as one technology for carrying
+\Glspl{ADS} have been proposed as one technology for carrying
 out this transmutation. An \gls{ADS} couples an externally generated neutron
 source to a subcritical multiplying core. Because the core remains below
 criticality, its operation depends on the external source, allowing fuel
@@ -77,7 +78,8 @@ represent using a single average spent-fuel composition.
 
 Many previous fuel-cycle studies have necessarily simplified the inventory by
 representing it as an aggregated material stream or a small set of
-representative recipes. That approach is useful when comparing generic
+representative recipes \cite{rodriguez_nuclear_2020,nea_regional_scenarios_2009,coquelet_pascal_cosi6_2015}.
+That approach is useful when comparing generic
 future fuel cycles or studying equilibrium reactor fleets. It is less
 satisfactory when the starting point is the existing U.S. inventory. A
 national-average recipe cannot identify whether the material it represents
@@ -89,7 +91,7 @@ available for transmutation and the characteristics of the inventory that
 remains untreated.
 
 Recent inventory databases make a more realistic representation possible.
-The \gls{STANDARDS}~5.0.1 database\cite{peterson_unf-st&dards_2017,peterson_additional_2017}
+The \gls{STANDARDS}~5.0.1 database \cite{peterson_unf-st&dards_2017,peterson_additional_2017}
 contains assembly-level information describing
 the U.S. commercial spent-fuel inventory, including attributes such as
 discharge date, burnup, initial enrichment, mass, and calculated isotopic
@@ -106,21 +108,21 @@ system-level consequences of advanced nuclear technologies. It also
 contributes to the UIUC-led \gls{EINSTEIN} project under the \gls{ARPAE} \gls{NEWTON} program,
 which brings together neutronics, nuclear-data, materials, fuel-cycle, and
 techno-economic analyses to evaluate externally driven transmutation systems.
-My own research in the group has involved working directly with \Cyclus,
+The topic of this thesis involves simulation with \Cyclus,
 detailed spent-fuel inventory data, and higher-fidelity reactor calculations,
-which made the disconnect between the available inventory information and
-existing system-level transmutation models especially clear. That combination
-of experience placed me in a position to build the missing connection between
-the fuel assemblies that exist today and the transmutation technologies being
+to fill a gap between the available inventory information and
+existing system-level transmutation models.
+The fuel assemblies that exist today with the transmutation technologies being
 proposed for the future.
 
-This thesis uses the \Cyclus nuclear fuel cycle simulation framework to make
+The \Cyclus nuclear fuel cycle simulation framework to make
 that connection. \Cyclus represents the fuel cycle as a system of interacting
-agents, including regions, institutions, and facilities. Individual
+agents, including regions, institutions, and facilities \cite{huff_fundamental_2016}. Individual
 facilities request, offer, and exchange material through the Dynamic Resource
-Exchange, while modular software components known as archetypes define their
+Exchange \cite{giddenMethodologyDeterminingDynamic2016},
+while modular software components known as archetypes define their
 behavior. This structure makes it possible to represent the U.S. inventory as
-an active supplier rather than as a static input file. It also allows that
+an active supplier rather than as a static input file \cite{bae_deep_2020}. It also allows that
 supplier to interact with processing, storage, and transmutation facilities
 within the same simulation.
 
@@ -133,7 +135,7 @@ Rather than collapsing these records into one average composition, the facility 
 material through the \Cyclus Dynamic Resource Exchange according to
 user-defined throughput limits and inventory-selection policies.
 
-The second archetype represents an \gls{ADS}. Its material transformation is
+The second archetype \texttt{ads}, represents an \gls{ADS}. Its material transformation is
 based on precomputed Serpent depletion calculations, allowing the
 fuel-cycle simulation to incorporate higher-fidelity neutronics results
 without performing a full transport and depletion calculation during every
@@ -187,7 +189,7 @@ United States, the \Cyclus framework, accelerator-driven systems, the
 \gls{EINSTEIN} program, and prior transmutation fuel-cycle simulations. It concludes
 by identifying the research gap addressed in this work.
 Chapter~\ref{ch:methodology} describes the design and implementation of the
-\texttt{us\_inventory} and \gls{ADS} archetypes, the preparation of their
+\texttt{us\_inventory} and \texttt{ads} archetypes, the preparation of their
 input data, and the simulation scenarios considered.
 Chapter~\ref{ch:results} presents the simulation results and compares the
 effects of the alternative inventory-selection policies.
