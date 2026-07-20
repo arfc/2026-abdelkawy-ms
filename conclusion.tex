@@ -1,47 +1,47 @@
 This thesis set out to connect a detailed picture of the U.S. used-fuel inventory
 to a model of an accelerator-driven burner, so that the transmutation of minor
 actinides could be evaluated as a national fuel cycle rather than as an isolated
-reactor calculation. Two Cyclus archetypes were developed to that end.
+reactor calculation. Two cyclus archetypes were developed to that end.
 \texttt{us\_inventory} represents the inventory at assembly resolution, supplying
 material by a choice of selection policies while preserving each assembly's
 composition and provenance; \texttt{ads} models an accelerator-driven
-minor-actinide burner from precomputed Serpent depletion cases, transforming a
+minor actinide burner from precomputed Serpent depletion cases, transforming a
 loaded core into its irradiated composition and closing the actinide mass balance
 each cycle. Together they form a complete transmutation fuel cycle when combined
 with standard separations, mixing, and disposal facilities.
 
-Exercising this fuel cycle across eight scenarios produced a consistent picture,
-summarized by two findings. First, minor-actinide transmutation is bounded by its
-feed rather than by reactor capacity. The accessible minor-actinide inventory is
+Exercising this fuel cycle across eight scenarios produced two findings.
+First, minor actinide transmutation is bound by its
+feed rather than by \gls{ADS} capacity. The accessible minor actinide inventory is
 only about \(104~\mathrm{t}\), under four core-loadings, so the large
-minor-actinide-only burner exhausts its supply and stalls, destroying about a
+minor actinide only burner exhausts its supply and stalls, destroying about a
 third of the inventory once-through and just over half with recycling, while no
 increase in reactor power can extend it further. The smaller fifty-fifty core
 avoids this limit only by co-burning plutonium, which changes the mission from
-minor-actinide destruction to broader transuranic destruction. Second, because
+minor actinide destruction to broader transuranic destruction. Second, because
 minor actinide is a trace component of the spent fuel, the mission alters the
-character of the waste, removing the constituents that dominate its long-term
+character of the waste, removing the constituents that dominate its long term
 hazard, without reducing the mass or volume that requires disposal, and it does so
 at the cost of reprocessing essentially the entire drawn inventory. The per-cycle
-transmutation rate was shown to agree with an independent fission-energy balance to
-within a few percent, giving confidence in the reduced-order model.
+transmutation rate was shown to agree with an independent fission energy balance to
+within a few percent, giving confidence in the reduced order model.
 
 These findings temper the expectation that accelerator-driven transmutation offers
 a straightforward reduction of the waste burden. It can strip the most hazardous
 component from the waste, but it is a decades-long undertaking for a small fleet of
-high-power units, limited by fuel handling rather than reactor performance, and it
+high power units, limited by fuel handling rather than reactor performance, and it
 leaves the bulk of the disposal problem intact.
 
 Several extensions follow directly from this work. The most immediate is to couple
 the mass-conserving waste histories to a decay and dose calculation, so that the
 reduction in long-term radiotoxicity and decay heat, the benefit that motivates
-minor-actinide removal, can be quantified rather than inferred. A second is to use
+minor actinide removal, can be quantified rather than inferred. A second is to use
 the assembly-level provenance recorded by \texttt{us\_inventory}, which associates
 each supplied assembly with its source facility and coordinates, as the input to a
 transportation and siting analysis of where retrieval and processing would occur.
 A third is an economic model of the reprocessing and handling burden the results
 imply, which this study describes but does not price. Finally, the reduced-order
 \texttt{ads} model could be broadened with a larger library of depletion cases, or
-the selection-policy effect examined within the coupled simulation rather than on
+the selection policy effect examined within the coupled simulation rather than on
 the static inventory alone. In each case, the archetypes and results developed here
 are intended as the foundation such analyses would build upon.

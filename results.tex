@@ -1,3 +1,19 @@
+This chapter presents the results produced by the \texttt{us\_inventory} and
+\texttt{ads} archetypes described in Chapter~\ref{ch:methodology}, following the
+material from the inventory that supplies the fuel cycle through the
+transmutation it enables to the waste it leaves behind. It begins by
+characterizing the U.S. spent-fuel inventory as loaded by \texttt{us\_inventory},
+confirming that the \gls{STANDARDS}~5.0.1 dataset is ingested correctly and
+establishing the scale of material available. It then examines how the choice of
+selection policy shapes the feed supplied to the burner, both in its delivery
+over time and in its geographic provenance, before turning to the transmutation
+performance of the \gls{ADS}: the actinide destroyed per cycle, the two burner
+configurations considered, and the effect of recycling. Attention then moves to
+the fate of the material once it has been processed, describing the composition
+of the remaining inventory and the resulting waste stream. The chapter closes by
+drawing these results together and interpreting what they imply for a
+minor actinide transmutation mission.
+
 \section{Inventory Characterization}
 \label{sec:results-baseline}
 
@@ -616,7 +632,16 @@ The results of this chapter can be read as a single argument about scale. The
 detailed, assembly-resolved picture of the U.S. spent-fuel inventory to a
 reduced-order model of an accelerator-driven burner, and running them together
 turns qualitative expectations about minor-actinide transmutation into quantified
-constraints. Two findings dominate, and both point the same way.
+constraints. Two findings dominate, and both point to the same conclusion: it is the scale
+and dilution of the national inventory, not the capability of the burner, that
+sets the limits of what transmutation can achieve. The first is that the
+mission is bound by the availability of its minor actinide feed rather than by
+installed reactor capacity. The second is that, because that feed is such a
+small fraction of the spent fuel, the mission changes the composition of the
+waste far more than its quantity. In each case the binding factor lies in the
+fuel cycle required to retrieve, separate, and handle a large, dilute inventory
+to reach a scarce target material, not in the accelerator-driven system that
+consumes it.
 
 \subsection{The Mission is Feed-Bound}
 \label{subsec:discussion-feedbound}
@@ -722,12 +747,12 @@ cycle; but no downstream radiotoxicity or decay-heat calculation is applied to t
 final waste compositions, so the reduction in long-term radiological hazard that
 motivates minor-actinide removal is not quantified here. Likewise, no cost,
 facility, or transportation model accompanies the fuel cycle, so the substantial
-reprocessing and handling burden the results imply is described but not priced.Nor does the model
+reprocessing and handling burden the results imply is described but not priced. Nor does the model
 represent the retrieval and transport logistics that the provenance results
-(Section~\ref{subsec:results-policy-provenance}) are designed to feed. These are not
-incidental omissions but the natural next steps: the assembly-resolved provenance,
+(Section~\ref{subsec:results-policy-provenance}) are designed to feed. There represent
+potential future work: the assembly-resolved provenance,
 the mass-conserving discharge streams, and the feed-limited operating histories
-developed here are precisely the inputs a subsequent radiotoxicity, economic, or
-siting analysis would require, and building those couplings onto this framework is
-the direction the concluding chapter identifies
+developed here are the inputs a subsequent radiotoxicity, economic, or
+siting analysis would require. conducting that analysis using this foundation is
+the discussion in the conclouding chapter.
 (Chapter~\ref{ch:conclusion}).

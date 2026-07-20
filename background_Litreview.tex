@@ -1,3 +1,25 @@
+This chapter establishes the technical and programmatic background on which
+the remainder of the thesis builds. The problem introduced in
+Chapter~\ref{ch:intro}, that a large, heterogeneous, and geographically
+distributed inventory of \gls{UNF} must eventually be managed rather than only
+stored, draws together several areas that have historically been developed
+in isolation: the characteristics of the national inventory itself, the
+simulation tools used to model fuel cycles, the transmutation technology
+proposed to consume long-lived actinides, and the research program within
+which this work is situated. Each is reviewed in turn.
+Section~\ref{sec:unf} describes the scale, distribution, and composition of
+\gls{UNF} in the United States and the assembly-level data that characterize
+it. Section~\ref{sec:cyclus} introduces the \Cyclus agent-based fuel cycle
+simulation framework and the modeling capabilities on which the archetypes
+developed in this work depend. Section~\ref{sec:ads} presents
+accelerator-driven systems and their role in minor actinide transmutation.
+Section~\ref{sec:einstein} situates the thesis within the \gls{EINSTEIN}
+project and the broader \gls{ARPAE} \gls{NEWTON} program.
+Section~\ref{sec:litrev} reviews prior fuel cycle simulations of
+transmutation systems, and Section~\ref{sec:gap} draws these threads together
+to identify the specific research gap that this thesis addresses.
+
+
 \section{Used Nuclear Fuel in the United States}
 \label{sec:unf}
 
@@ -29,9 +51,9 @@ operate a permanent repository for commercial \gls{UNF}. Until such a repository
 another disposition pathway becomes available, reactor licensees must store
 the fuel at or near the sites where it was generated
 \cite{nrc_high_level_waste,nrc_spent_fuel_storage}. Newly discharged fuel is
-first placed in water-filled spent-fuel pools, which provide both cooling and
+first placed in water filled spent fuel pools, which provide both cooling and
 radiation shielding. After several years of cooling, assemblies may be
-transferred to sealed dry-storage systems at independent spent fuel storage
+transferred to sealed dry storage systems at independent spent fuel storage
 installations.
 
 Because a national disposal system has not yet been implemented\cite{nrc_spent_fuel_storage}, the
@@ -43,14 +65,14 @@ inventory that must eventually be transported, consolidated, processed, or
 disposed of\cite{carter_banerjee_inventory_2024}.
 
 Approximately \(99{,}000\) \gls{MTU} from commercial
-pressurized-water reactors and boiling-water reactors
+pressurized water reactors and boiling water reactors
 had been permanently discharged in the United States. This inventory grows by
 roughly 2,000 \gls{MTU} per year as operating reactors discharge fuel \cite{GC-859},
 and the current reactor fleet is projected to have generated about 140,000 \gls{MTU}
 in total by 2060. The U.S. \gls{DOE} managed an additional inventory
 of approximately \(2{,}446\) \gls{MTHM}, excluding most naval fuel.
-Unlike the comparatively standardized commercial light-water-reactor
-inventory, \gls{DOE}-managed \gls{UNF} includes fuel from defense-production reactors,
+Unlike the comparatively standardized commercial light water reactor
+inventory, \gls{DOE}-managed \gls{UNF} includes fuel from defense production reactors,
 research and test reactors, early demonstration reactors, and other specialized
 programs. Altogether, \gls{UNF} and primary reprocessing wastes were distributed
 across more than 100 locations in 39 states
@@ -87,7 +109,7 @@ form, cladding, geometry, and irradiation history.
         Permanently discharged \gls{BWR} fuel
             & \(179{,}466\) assemblies; \(32{,}023\) \gls{MTHM} \\
 
-        Commercial dry-storage canisters or casks
+        Commercial dry storage canisters or casks
             & \(3{,}862\) \\
 
         \gls{DOE}-managed \gls{UNF}
@@ -105,22 +127,22 @@ form, cladding, geometry, and irradiation history.
         Operating commercial nuclear power reactors
             & \(94\) reactors \\
 
-        Permanently shut-down commercial nuclear power reactors
+        Permanently shut down commercial nuclear power reactors
             & \(27\) reactors \\
 
         \gls{DOE} sites with \gls{UNF} storage or research reactors
             & \(6\) sites \\
 
-        University research-reactor sites
+        University research reactor sites
             & \(20\) sites \\
 
-        Other government research-reactor sites
+        Other government research reactor sites
             & \(4\) sites \\
 
         Commercial research and development sites with \gls{UNF}
             & \(4\) sites \\
 
-        Primary reprocessing-waste or high-level-waste sites
+        Primary reprocessing waste or high level waste sites
             & \(4\) sites \\
         \bottomrule
     \end{tabularx}
@@ -128,7 +150,7 @@ form, cladding, geometry, and irradiation history.
     \begin{tablenotes}[flushleft]
         \footnotesize
         \item[a] The detailed \gls{DOE} inventory total depends on the treatment
-        of naval fuel and commercial-origin fuel transferred to \gls{DOE} custody.
+        of naval fuel and commercial fuel transferred to \gls{DOE} custody.
         The value shown here follows the inventory basis used in this work.
         Quantities are rounded and may therefore differ slightly among
         inventory summaries.
@@ -137,7 +159,7 @@ form, cladding, geometry, and irradiation history.
 \end{table}
 
 The commercial inventory has also changed in composition over the history of
-the U.S. nuclear power program. In the early decades of light-water-reactor
+the U.S. nuclear power program. In the early decades of light water reactor
 operation, discharged fuel commonly had burnups below
 \(20~\mathrm{GWd/\gls{MTU}}\), and initial enrichments were often near
 \(2~\mathrm{wt}\%\) \ce{^{235}U}. Improvements in fuel design, reactor
@@ -149,8 +171,8 @@ century, average discharge burnup had increased to approximately
 \cite{carter_banerjee_inventory_2024}.
 
 Figure~\ref{fig:annual-burnup-enrichment} shows the increase in annual average
-burnup and initial enrichment for U.S. light-water-reactor discharges between
-1968 and 2022. Although pressurized-water-reactor and boiling-water-reactor
+burnup and initial enrichment for U.S. light water reactor discharges between
+1968 and 2022. Although pressurized water reactor and boiling water reactor
 fuel follow somewhat different histories, both exhibit the same broad trend
 toward higher enrichment and higher discharge burnup.
 
@@ -159,7 +181,7 @@ toward higher enrichment and higher discharge burnup.
     \includegraphics[width=\textwidth]
         {figures/burnup_enrichment.png}
     \caption{The annual average discharge burnup and initial
-    \ce{^{235}U} enrichment of U.S. light-water-reactor fuel increased
+    \ce{^{235}U} enrichment of U.S. light water reactor fuel increased
     substantially between 1968 and 2022. Figure reproduced from \cite{carter_banerjee_inventory_2024}.}
     \label{fig:annual-burnup-enrichment}
 \end{figure}
@@ -182,7 +204,7 @@ assemblies at the extremes of the operating range.
 
 Higher burnup changes the isotopic composition of discharged fuel. During
 irradiation, neutron capture in \ce{^{238}U} produces plutonium isotopes, while
-successive neutron-capture and decay reactions generate neptunium, americium,
+successive neutron capture and decay reactions generate neptunium, americium,
 and curium. Extending irradiation therefore generally increases the production
 of plutonium and minor actinides within an assembly, although the exact
 inventory depends on enrichment, reactor type, neutron spectrum, power
@@ -201,7 +223,7 @@ americium isotopes, become the dominant contributors to the remaining heat
 and radiotoxicity
 \cite{carter_banerjee_inventory_2024}.
 
-This transition is significant for the U.S. waste-management strategy. Storage can
+This transition is significant for the U.S. waste management strategy. Storage can
 allow short-lived fission products to decay, but short-term storage does not eliminate
 the fundamental long-term burden posed by plutonium and the minor actinides.
 In a once-through fuel cycle, these nuclides must otherwise remain isolated while they decay over much
@@ -227,6 +249,18 @@ system.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Cyclus Fuel Cycle Simulation Framework}
 \label{sec:cyclus}
+
+The two archetypes developed in this thesis are implemented within \Cyclus,
+and their behavior can only be understood in relation to the framework's
+underlying model of facilities, materials, and exchange. This section reviews
+the aspects of \Cyclus most relevant to that implementation and introduces the agent-based
+structure of the framework and how it represents fuel cycle facilities and
+their interactions over time. Then moving on to describe how materials and their
+isotopic compositions are represented and how radioactive decay is applied,
+which is central to tracking the evolving minor actinide vector on which this
+work depends and explains the \gls{DRE}, the mechanism through
+which facilities request, offer, and trade resources at each time step.
+
 \subsection{Framework Basics}
 \label{subsec:cyclus-framework-basics}
 
@@ -236,7 +270,7 @@ of nuclear fuel cycle facilities over time. The framework tracks discrete
 facilities and material resources rather than representing the fuel cycle
 solely through aggregated fleet-level flows. This design supports analyses
 in which individual facility behavior, material availability, and institutional
-decisions influence system-level outcomes
+decisions influence system level outcomes
 \cite{huff_fundamental_2016}.
 
 Agents in a \Cyclus simulation are organized into three hierarchical types:
@@ -260,7 +294,7 @@ The behavior of each agent is defined by an \emph{archetype}. Archetypes
 are modular software components that implement the physical behavior,
 operating logic, or decision rules of a region, institution, or facility.
 They are compiled independently from the \Cyclus kernel and loaded
-dynamically at the beginning of a simulation. This plug-in architecture
+dynamically at the beginning of a simulation. This plug in architecture
 allows alternative models of the same fuel cycle process to be exchanged
 without modifying the core simulation framework
 \cite{huff_fundamental_2016,scopatz_cyclus_2015}.
@@ -325,7 +359,7 @@ vector when a composition is next inspected and caching the result for reuse
 radioactive decay over the multi-decade simulation horizon while avoiding
 the cost of decaying every inventory at every step. Decay is significant
 over this horizon: the roughly 14-year half-life of \ce{^{241}Pu}, for
-example, produces appreciable in-growth of \ce{^{241}Am} across a
+example, produces appreciable ingrowth of \ce{^{241}Am} across a
 thirty-year run, altering the minor actinide vector that the inventory and
 accelerator-driven system models are designed to track.
 
@@ -359,14 +393,14 @@ The requests, bids, preferences, and constraints form a resource assignment
 problem. \Cyclus formulates this assignment as an optimization problem, solvable in
 either a linear or a mixed-integer form, and the \gls{DRE} solves it to select a
 set of transactions that satisfies the applicable constraints while favoring
-higher-preference trades \cite{gidden_agent-based_2015}.
+higher preference trades \cite{gidden_agent-based_2015}.
 After the solution is determined, the participating facilities execute the
 selected transactions and update their inventories. This process is repeated
 at each simulation time step, allowing supply and demand relationships to
 change dynamically as facilities are deployed, retired, depleted, or otherwise
 alter their behavior.
 
-By separating exchange coordination from facility-specific behavior, the \gls{DRE}
+By separating exchange coordination from facility specific behavior, the \gls{DRE}
 allows archetypes to be developed and combined modularly. A storage facility,
 reactor, separations plant, or repository can participate in the same exchange
 system as long as it implements the appropriate request, bidding, and trade
@@ -385,7 +419,7 @@ resolution, reading isotopic compositions and assembly metadata from the
 \gls{STANDARDS}~5.0.1 dataset\cite{peterson_unf-st&dards_2017,peterson_additional_2017}
 and supplying material according to user-selected inventory selection policies.
 The \texttt{ads} facility represents an accelerator-driven subcritical burner, transforming a
-loaded core composition using a library of pre-computed Serpent depletion
+loaded core composition using a library of precomputed Serpent depletion
 cases. Both archetypes participate in the resource exchange described above:
 \texttt{us\_inventory} as a supplier whose selection policies determine which
 assemblies it offers against a given request, and \texttt{ads} as a requester
@@ -417,7 +451,7 @@ An \gls{ADS} consists of three principal components: a high-energy proton
 accelerator, a spallation target, and a subcritical multiplying core. The
 accelerator produces a proton beam, often with an energy of several hundred
 megaelectronvolts to approximately one gigaelectronvolt. The beam strikes a
-heavy-metal target, where high-energy proton-nucleus interactions release
+heavy metal target, where high energy proton-nucleus interactions release
 neutrons through the spallation process. These source neutrons enter the
 surrounding subcritical core and induce fission reactions in the fuel
 \cite{aitabderrahim_myrrha_2001,nea_ads_components_2010}.
@@ -426,9 +460,9 @@ The target must generate a sufficiently intense neutron source while
 withstanding substantial beam heating, radiation damage, and mechanical
 loading. Heavy elements are attractive target materials because they produce
 relatively large numbers of neutrons when bombarded by high-energy protons.
-Proposed \gls{ADS} targets include solid tungsten targets and liquid-metal targets
+Proposed \gls{ADS} targets include solid tungsten targets and liquid metal targets
 based on lead or lead-bismuth eutectic. In some designs, a circulating
-liquid-metal target also contributes to heat removal
+liquid metal target also contributes to heat removal
 \cite{aitabderrahim_myrrha_2001,nea_ads_components_2010}.
 
 The core is designed to remain subcritical, such that
@@ -513,10 +547,10 @@ attention in the United States during the late 1990s and early 2000s, most
 prominently through the \gls{ATW} program,
 which developed system scenarios and integration roadmaps for dedicated
 subcritical burners \cite{vantuyleRoadmapDevelopingATW2001}. Interest in the approach has
-since re-emerged in the context of managing the growing national
+since reemerged in the context of managing the growing national
 inventory.
 
-\subsection{Minor-Actinide Transmutation}
+\subsection{Minor Actinide Transmutation}
 \label{subsec:ads-ma-transmutation}
 
 The principal motivation for using \gls{ADS} technology for nuclear waste
@@ -531,7 +565,7 @@ the quantity of long-lived transuranic material requiring disposal
 Fast neutron spectra are generally preferred for minor actinide
 transmutation because fission becomes more competitive with radiative
 capture for many transuranic isotopes at higher neutron energies. A
-fast-spectrum system can therefore destroy minor actinides through fission
+fast spectrum system can therefore destroy minor actinides through fission
 rather than merely converting them into heavier actinides
 \cite{iaea_ma_fuels_2009}.
 
@@ -550,13 +584,13 @@ reactivity feedback. In conventional reactor fuel, increasing fuel
 temperature broadens neutron absorption resonances and generally introduces
 negative reactivity. This prompt feedback opposes the temperature increase.
 The magnitude of this effect can be weaker in minor actinide rich,
-fast-spectrum fuels because of their isotopic composition and the reduced
+fast spectrum fuels because of their isotopic composition and the reduced
 importance of resonance absorption in a fast spectrum
 \cite{eriksson_ads_safety_2004,iaea_ma_fuels_2009}.
 
 The combination of a reduced delayed neutron fraction and weaker negative
 Doppler feedback makes a critical core with a high minor actinide content
-more difficult to control. Critical fast-reactor concepts may therefore limit
+more difficult to control. Critical fast reactor concepts may therefore limit
 the amount of minor actinides loaded in the core or distribute them among
 fuel containing larger quantities of uranium or plutonium\cite{eriksson_ads_safety_2004}.
 
@@ -637,17 +671,17 @@ interruptions can therefore impose cyclic thermal loads on the fuel,
 spallation target, coolant systems, and structural components
 \cite{nea_beam_interruptions_2004}.
 
-The \gls{OECD} Nuclear Energy Agency beam-interruption benchmark specifically
+The \gls{OECD} Nuclear Energy Agency beam interruption benchmark specifically
 examined the temperature transients caused by beam trips in a
 lead-bismuth-cooled, subcritical system. The study identified thermal
 fatigue of structural components as an important consequence of repeated
 beam interruptions \cite{nea_beam_interruptions_2004}. More recent analysis
 of the China Initiative Accelerator Driven System has also evaluated fuel
-cladding fatigue under repeated beam-trip transients
+cladding fatigue under repeated beam trip transients
 \cite{wang_beam_trips_2024}.
 
 Producing a continuous, high-current proton beam with the availability
-required for a power-producing nuclear system is more demanding than
+required for a power producing nuclear system is more demanding than
 operating an accelerator intended for intermittent research use.
 Fault-tolerant accelerator designs, redundant components, and rapid recovery
 procedures may reduce the number and duration of beam interruptions, but
@@ -663,7 +697,7 @@ environment \cite{nea_ads_components_2010}.
 \gls{ADS} deployment additionally requires supporting fuel cycle infrastructure.
 Spent nuclear fuel must first be processed to recover the actinides intended
 for transmutation. The resulting material rich in minor actinides must then be
-fabricated into fuel or introduced into an appropriate mobile-fuel medium.
+fabricated into fuel or introduced into an appropriate mobile fuel medium.
 After irradiation, the material may require repeated separation and recycle
 to achieve substantial actinide destruction. These activities introduce
 material losses, secondary waste streams, safeguards requirements, worker
@@ -697,7 +731,7 @@ The Enhanced Integrated Nuclear Systems for Transmutation and Efficient Isolatio
 project is part of the \gls{ARPAE} Nuclear Energy Waste Transmutation Optimized Now (\gls{NEWTON}) program.
 The \gls{NEWTON} program was established to support
 technologies that enable the transmutation of used nuclear fuel and reduce
-the burden placed on permanent waste-disposal facilities
+the burden placed on permanent waste disposal facilities
 \cite{arpa_e_newton_2025}. The \gls{EINSTEIN} project is led by the University of Illinois Urbana-Champaign
 \cite{arpa_e_einstein_2025}.
 
@@ -706,8 +740,8 @@ technical categories. Category A focuses on technologies for generating and
 accelerating particle beams capable of initiating transmutation reactions.
 Category B focuses on the design, fabrication, and processing of targets or
 fuel forms containing the nuclides to be transmuted. Category C integrates
-the technologies developed in Categories A and B through system-level
-modeling, life-cycle analysis, techno-economic analysis, and databases of
+the technologies developed in Categories A and B through system level
+modeling, life cycle analysis, techno-economic analysis, and databases of
 materials and components
 \cite{arpa_e_newton_2025,doe_categories}. \gls{UIUC} is a Category C and therefore
 does not develop a single accelerator or transmutation target in isolation.
@@ -735,17 +769,17 @@ data, neutronics, materials compatibility, fuel cycle behavior, and economic
 performance rather than evaluating each component independently. The
 official project description identifies the development of a comprehensive
 life cycle analysis framework spanning the full transmutation process, from
-the composition of the incoming used-fuel stream through irradiation,
+the composition of the incoming used fuel stream through irradiation,
 processing, and the resulting waste or product streams
 \cite{arpa_e_einstein_2025}. Experimental and computational activities are
 used to reduce uncertainties in neutron transport, material properties, and
 component performance.
 
 The \gls{UIUC} project team is organized around several interacting technical
-areas as shown in Figure~\ref{fig:uiuc-einstein}. Nuclear-data and diagnostics work identifies reactions whose
+areas as shown in Figure~\ref{fig:uiuc-einstein}. Nuclear data and diagnostics work identifies reactions whose
 uncertainties significantly affect neutron multiplication and transmutation
 predictions and develops experimental strategies to reduce those
-uncertainties. Neutronics analysis provides source-term, criticality,
+uncertainties. Neutronics analysis provides source term, criticality,
 depletion, and transmutation calculations for selected \gls{XDS} concepts.
 Materials research evaluates corrosion, irradiation damage, thermophysical
 properties, and the chemical behavior of lead coolants and molten salts.
@@ -759,7 +793,7 @@ candidate coolant and fuel media
     \includegraphics[width=\textwidth]
         {figures/EINSTEIN}
     \caption{Overview of the UIUC EINSTEIN project, which integrates FLUKA,
-Serpent, nuclear-data, materials, and \Cyclus fuel cycle analyses to evaluate
+Serpent, nuclear data, materials, and \Cyclus fuel cycle analyses to evaluate
 accelerator-driven transmutation of plutonium and minor actinides from used
 nuclear fuel. The project aims to reduce the radiotoxicity of the remaining
 waste to approximately that of natural uranium ore within 30 years. Figure reproduced from \cite{fang_einstein_2025}.}
@@ -771,12 +805,12 @@ These activities supply the inputs required for the fuel cycle and
 techno-economic assessment. The fuel cycle portion of the project represents
 the U.S. used nuclear fuel inventory, separations facilities, \gls{XDS} facilities,
 recycle pathways, storage facilities, and waste streams in \Cyclus. The
-inventory characterization begins with national spent-fuel records and
+inventory characterization begins with national spent fuel records and
 age-corrected isotopic compositions, which are used to define realistic feed
 streams for the modeled \gls{XDS} technologies. New \Cyclus archetypes are then
 used to evaluate how the choice of feed material, facility throughput,
-deployment schedule, separations capacity, and material-selection policy
-affects system-level transmutation performance
+deployment schedule, separations capacity, and material selection policy
+affects system level transmutation performance
 \cite{fang_einstein_2025}.
 
 The techno-economic analysis uses the outputs of the fuel cycle and
@@ -797,7 +831,7 @@ connect the characteristics of the national used fuel inventory with
 candidate \gls{XDS} deployment scenarios. The resulting simulations provide
 material flow, facility scaling, and inventory depletion information that can
 be combined with the neutronics, materials, and economic analyses performed
-elsewhere in the project. In this way, the thesis contributes the system-level
+elsewhere in the project. In this way, the thesis contributes the system level
 link between the physical design of an \gls{XDS} and its potential effect on the
 U.S. used nuclear fuel inventory.
 
@@ -813,8 +847,8 @@ Research on accelerator-driven transmutation has progressed through several
 distinct stages. Early studies established the physics of coupling an intense
 accelerator-produced neutron source to a subcritical multiplying medium.
 Subsequent programs developed and tested individual enabling technologies,
-including high-current accelerators, liquid-metal spallation targets,
-subcriticality-monitoring methods, minor actinide fuels, and lead or
+including high current accelerators, liquid metal spallation targets,
+subcriticality monitoring methods, minor actinide fuels, and lead or
 lead-bismuth coolant systems. More recent studies have examined how dedicated
 transmutation facilities could be incorporated into regional or national
 nuclear fuel cycles.
@@ -834,29 +868,29 @@ to the third category, but its facility models are informed by the first two.
 
 Europe has sustained the most continuous multinational program of \gls{ADS}
 research. Its development pathway has included conceptual system studies,
-critical and subcritical experiments, a megawatt-class liquid-metal
-spallation-target experiment, and the staged development of the \gls{MYRRHA}
+critical and subcritical experiments, a megawatt class liquid metal
+spallation target experiment, and the staged development of the \gls{MYRRHA}
 research facility. These programs have demonstrated important elements of an
 \gls{ADS}, although no European facility has yet operated as a high power,
 minor actinide burning \gls{ADS}.
 
 One influential early European concept was Carlo Rubbia's
 Energy Amplifier. The Energy Amplifier combined a high-energy proton
-accelerator, a heavy-metal spallation target, and a subcritical fast-spectrum
+accelerator, a heavy metal spallation target, and a subcritical fast spectrum
 blanket. Early versions emphasized energy production from thorium, while later
-analyses also considered waste transmutation and fast-spectrum operation
+analyses also considered waste transmutation and fast spectrum operation
 \cite{rubbia_conceptual_1995}. The importance of this work was not that
 it produced a directly deployable fuel cycle design, but that it articulated
-a complete accelerator-target-blanket system and stimulated coordinated
+a complete accelerator target blanket system and stimulated coordinated
 European research on spallation targets, lead-based coolants, subcritical
 reactor physics, and partitioning and transmutation.
 
 European research was subsequently coordinated through programs including
 EUROTRANS, which investigated an experimental \gls{ADS} and the European Facility
 for Industrial Transmutation \gls{EFIT}. \gls{EFIT} was conceived as a lead-cooled,
-fast-spectrum minor actinide burner rather than as a general-purpose power
+fast spectrum minor actinide burner rather than as a general-purpose power
 reactor. Its design studies addressed accelerator requirements, target
-integration, subcritical-core design, dedicated minor actinide fuel, and the
+integration, subcritical core design, dedicated minor actinide fuel, and the
 supporting closed fuel cycle. In the ``double-strata'' strategy commonly
 associated with these studies, conventional critical reactors would manage
 most uranium and plutonium recycling, while a smaller fleet of dedicated \gls{ADS}
@@ -874,7 +908,7 @@ separated feed material \cite{nea_regional_scenarios_2009}.
 
 The principal European engineering demonstrator is \gls{MYRRHA} developed
 by \gls{SCKCEN} in Belgium. \gls{MYRRHA} is designed as a lead-bismuth eutectic cooled,
-fast-spectrum research system capable of subcritical accelerator driven
+fast spectrum research system capable of subcritical accelerator driven
 operation and, in the broader design concept, critical operation. Its purposes
 include demonstrating \gls{ADS} technology, conducting fuels and materials
 irradiations, supporting radioisotope production, and providing experimental
@@ -886,7 +920,7 @@ the lower-energy portion of the proton accelerator and associated target
 stations. Construction of this phase began in 2024. The later phases would
 extend the accelerator and couple it to the subcritical reactor. \gls{MYRRHA}
 therefore represents the most advanced European program directed toward a
-power-scalable \gls{ADS}, but it should not yet be described as an operating
+power scalable \gls{ADS}, but it should not yet be described as an operating
 accelerator-driven reactor \cite{dordaImplementationStatusMyrrha2024}.
 
 Several predecessor experiments were developed to reduce the technical risk
@@ -906,9 +940,9 @@ A separate enabling technology experiment was the MEGAwatt Pilot Experiment,
 or \gls{MEGAPIE}, operated at the Swiss spallation neutron source \gls{SINQ} in 2006.
 \gls{MEGAPIE} exposed a circulating lead-bismuth target to a continuous
 \(590~\mathrm{MeV}\) proton beam at approximately \(0.77~\mathrm{MW}\).
-It was the first liquid-metal spallation target operated in the megawatt beam
+It was the first liquid metal spallation target operated in the megawatt beam
 regime and supplied experimental data on neutron production, heat removal,
-liquid-metal operation, activation products, structural behavior, and
+liquid metal operation, activation products, structural behavior, and
 post-irradiation examination
 \cite{bauer_megapie_2001,wagner_megapie_2008,
 panebianco_neutronic_2007}. \gls{MEGAPIE} did not include a multiplying reactor core,
@@ -920,7 +954,7 @@ France contributed to these European programs through \gls{CEA}, \gls{CNRS}, and
 institutions, as well as through national fuel cycle scenario studies. \gls{CEA}
 developed the \gls{COSI} simulation code to model reactor fleets and associated
 fuel cycle facilities over long time horizons. \gls{COSI} studies examined
-transitions from light-water reactors to sodium cooled fast reactors and
+transitions from light water reactors to sodium cooled fast reactors and
 compared homogeneous, heterogeneous, and dedicated minor actinide
 transmutation strategies
 \cite{coquelet_pascal_cosi6_2015}.Other French and European studies compared
@@ -931,11 +965,11 @@ facility requirements \cite{chabert_technical_2013,cross_check_2016}.
 Taken together, the European programs established a progression from
 component experiments to integrated demonstrator design and fleet-level
 scenario analysis. \gls{GUINEVERE} addressed source coupling and subcriticality
-monitoring, \gls{MEGAPIE} addressed a high-power liquid-metal target, \gls{EFIT} provided
+monitoring, \gls{MEGAPIE} addressed a high power liquid metal target, \gls{EFIT} provided
 a reference industrial transmuter design, and \gls{MYRRHA} seeks to integrate many
 of these capabilities into a research facility. Their scenario studies also
 showed that the viability of \gls{ADS} deployment cannot be inferred from
-single-core transmutation efficiency alone.
+single core transmutation efficiency alone.
 
 \subsection{United States Transmutation Programs, 1990s--2000s}
 \label{subsec:us-transmutation-programs}
@@ -971,7 +1005,7 @@ burden depends on the efficiency and capacity of the complete recycle loop.
 The follow-on \gls{AAA} program broadened the
 scope of the U.S. effort to include waste transmutation, energy applications,
 and enabling accelerator technologies. Program planning documents considered
-the reliability of high-power proton accelerators, liquid-metal and solid
+the reliability of high power proton accelerators, liquid metal and solid
 targets, subcritical blanket configurations, separations based on aqueous and
 pyrochemical methods, and fabrication of fuels containing high fractions of
 transuranic elements. Much of this work
@@ -980,9 +1014,9 @@ development. No integrated U.S. \gls{ATW} or \gls{AAA} engineering demonstrator 
 constructed.
 
 Systems studies performed for \gls{ATW} and related programs compared combinations
-of light-water reactors, critical fast reactors, and accelerator-driven
+of light water reactors, critical fast reactors, and accelerator-driven
 systems. These studies investigated questions such as whether plutonium
-should first be recycled in light-water reactors, whether \gls{ADS} facilities
+should first be recycled in light water reactors, whether \gls{ADS} facilities
 should consume all transuranics or only minor actinides, and how many recycle
 passes would be required. Their results repeatedly showed that conclusions
 were sensitive to separations efficiency, fuel cooling time, accelerator
@@ -991,7 +1025,7 @@ power \cite{vantuyleRoadmapDevelopingATW2001,bellerUSAcceleratorTransmutation200
 
 
 After the large \gls{ATW} and \gls{AAA} programs ended, U.S. \gls{ADS} work continued through
-more focused reactor-physics, materials, target, and systems studies. A recent
+more focused reactor physics, materials, target, and systems studies. A recent
 and particularly relevant example is the Argonne National Laboratory concept
 reported by Gohar, Cao, and Kraus. Their design was developed specifically
 to consume plutonium and minor actinides derived from the U.S. spent nuclear
@@ -1005,11 +1039,11 @@ several blanket compositions and estimate the actinide consumption achievable
 over decades of full-power operation. The study concluded that a small fleet
 of large \gls{ADS} units could consume the minor actinide inventory assumed in its
 analysis. However, its scope was a set of reference \gls{ADS} designs and their
-depletion performance. It did not dynamically model the assembly-level U.S.
-inventory, site-to-site material movement, separations deployment,
-facility-construction schedules, or competition among facilities for
-particular spent-fuel resources. Thus, it provides the principal reactor
-design basis for the \gls{ADS} model in this thesis, but not the system-level model
+depletion performance. It did not dynamically model the  level U.S.
+inventory, site to site material movement, separations deployment,
+facility construction schedules, or competition among facilities for
+particular spent fuel resources. Thus, it provides the principal reactor
+design basis for the \gls{ADS} model in this thesis, but not the system level model
 needed to determine how that design would be supplied and deployed.
 
 \subsection{Ongoing Construction: CiADS}
@@ -1036,19 +1070,19 @@ minor actinide burner
 \cite{yin_power_2022,wang_transient_2023}.
 
 CiADS is significant because it moves beyond isolated component tests toward
-construction of an integrated accelerator-target-subcritical-reactor
+construction of an integrated accelerator target subcritical reactor
 facility. Its research program addresses accelerator reliability, beam
 transport, target behavior, lead-bismuth technology, reactor control,
 thermal hydraulics, and protection systems. In the proposed operating
-strategy, core power is controlled through the proton-beam power because the
-subcritical core does not contain a conventional critical-reactor control
+strategy, core power is controlled through the proton beam power because the
+subcritical core does not contain a conventional critical reactor control
 system for routine power regulation
 \cite{yin_power_2022,li_control_2025}.
 
 Dynamic and transient studies of CiADS have analyzed beam trips, beam
-overpower, loss of flow, loss of heat sink, and station-blackout conditions.
-These calculations indicate substantial thermal margins for the low-power
-demonstrator while identifying longer-term concerns such as lead-bismuth
+overpower, loss of flow, loss of heat sink, and station blackout conditions.
+These calculations indicate substantial thermal margins for the low power
+demonstrator while identifying longer term concerns such as lead-bismuth
 corrosion, creep, and fatigue under repeated thermal cycling
 \cite{wang_transient_2023}. The project therefore
 provides an important test of whether the theoretically attractive
@@ -1056,8 +1090,8 @@ subcritical characteristics of \glspl{ADS} can be realized in a maintainable
 engineering system.
 
 CiADS should not be interpreted as a completed demonstration of a commercial
-transmutation fuel cycle. The first-stage system is much smaller than the
-gigawatt-thermal designs commonly assumed in industrial fuel cycle studies,
+transmutation fuel cycle. The first stage system is much smaller than the
+gigawatt thermal designs commonly assumed in industrial fuel cycle studies,
 and its initial mission emphasizes technology demonstration. Nevertheless,
 operational experience from CiADS could reduce major uncertainties presently
 treated parametrically in systems models, including beam availability,
@@ -1068,14 +1102,14 @@ the coupling between accelerator and reactor operation.
 \label{subsec:ads-fuel-cycle-simulations}
 
 The studies described above span a wide range of spatial and temporal
-resolutions. Core-design calculations may represent individual fuel pins and
+resolutions. Core design calculations may represent individual fuel pins and
 detailed nuclide vectors but usually consider only one reactor and a limited
 number of irradiation cycles. Fuel cycle simulators generally model decades
 of fleet evolution, but they aggregate fuel into batches, reactor types, or
 material streams. This trade-off between reactor detail and system breadth is
 central to understanding the gap addressed by this thesis.
 
-The \gls{OECD}/\gls{NEA} regional-scenarios study extended this type of analysis to
+The \gls{OECD}/\gls{NEA} regional scenarios study extended this type of analysis to
 groups of countries with different nuclear policies and fuel cycle
 infrastructure. It used the \gls{EFIT} design as the reference \gls{ADS} and calculated
 the number of transmuters and associated fuel cycle facilities required to
@@ -1089,7 +1123,7 @@ assemblies.
 France's \gls{COSI} code has been used extensively for dynamic scenario analysis.
 \gls{COSI} represents reactor fleets, fuel fabrication, irradiation, cooling,
 reprocessing, storage, and waste production over time. Applications have
-included transitions from the existing French light-water-reactor fleet to
+included transitions from the existing French light water reactor fleet to
 sodium-cooled fast reactors, along with comparisons of minor actinide
 management options
 \cite{coquelet_pascal_cosi6_2015}. These studies are highly detailed in their
@@ -1099,8 +1133,8 @@ compositions rather than a geospatially explicit assembly inventory.
 
 European projects also compared the economic and material consequences of
 minor actinide transmutation in critical fast reactors and \gls{ADS} facilities.
-Chabert et al.\ compared no-transmutation, fast-reactor, and \gls{ADS} options,
-while Merino-Rodríguez et al.\ cross-checked economic and mass-balance
+Chabert et al.\ compared no-transmutation, fast reactor, and \gls{ADS} options,
+while Merino-Rodríguez et al.\ cross-checked economic and mass balance
 calculations for scenarios involving dedicated \gls{ADS} burners
 \cite{chabert_technical_2013,cross_check_2016}. These studies
 demonstrated that \gls{ADS}-based strategies may achieve concentrated
@@ -1113,7 +1147,7 @@ to study Belgian fleet evolution and waste management. A published
 verification and case study examined the effect of adding an \gls{ADS} to a Belgian
 nuclear phase-out scenario. The model tracked fleet-level materials and showed
 the potential reduction of minor actinide inventories, but it did not model
-individual commercial fuel assemblies or source-site-specific selection
+individual commercial fuel assemblies or source site specific selection
 \cite{rodriguez_nuclear_2020}.
 
 Other studies have focused on detailed depletion within an \gls{ADS} rather than
@@ -1125,8 +1159,8 @@ how quickly suitable material becomes available, where it is stored, which
 assemblies are selected, or how infrastructure limits deployment
 \cite{gohar_ads_2021}.
 
-Across the literature reviewed here, system-level \gls{ADS} studies generally use
-one of three material representations. The first is an equilibrium mass-flow
+Across the literature reviewed here, system level \gls{ADS} studies generally use
+one of three material representations. The first is an equilibrium mass flow
 model, in which annual production and destruction rates are balanced without
 explicitly simulating each facility. The second is a dynamic fleet model in
 which reactor types and fuel cycle plants are deployed over time and exchange
@@ -1137,7 +1171,7 @@ cycle is prescribed rather than dynamically represented.
 These approaches have provided estimates of \gls{ADS} support ratios, required
 fleet size, equilibrium actinide inventories, separations capacity, fuel cycle
 cost, and repository benefits. They have not generally represented the
-existing U.S. used-fuel inventory as a set of discrete assemblies carrying
+existing U.S. used fuel inventory as a set of discrete assemblies carrying
 site, discharge date, burnup, enrichment, mass, and composition metadata. In
 the literature reviewed for this thesis, no prior \gls{ADS} fuel cycle study was
 identified that dynamically selected individual assemblies from the
@@ -1176,11 +1210,11 @@ discussed above.
         \gls{MEGAPIE}
         & Component experiment
         & Megawatt-class liquid lead-bismuth spallation target
-        & Target and neutron-source behavior only \\
+        & Target and neutron source behavior only \\
 
         \gls{MYRRHA}
         & Staged demonstrator
-        & Accelerator, target, fast-spectrum research reactor, fuels,
+        & Accelerator, target, fast spectrum research reactor, fuels,
           materials, and \gls{ADS} operation
         & Core and irradiation experiments; supporting scenario studies \\
 
@@ -1196,7 +1230,7 @@ discussed above.
 
         Gohar et al.
         & \gls{ADS} design and depletion study
-        & Lead-based mobile-fuel \gls{ADS} for the U.S. actinide inventory
+        & Lead-based mobile fuel \gls{ADS} for the U.S. actinide inventory
         & Prescribed blanket compositions \\
 
         CiADS
@@ -1223,19 +1257,19 @@ That distinction is important for the U.S. case. The national inventory is
 not an equilibrium material stream produced by a uniform reactor fleet. It is
 a heterogeneous legacy inventory accumulated over several decades and stored
 at geographically dispersed operating and shutdown sites. Assemblies differ
-in age, burnup, enrichment, reactor type, remaining heavy-metal mass, isotopic
+in age, burnup, enrichment, reactor type, remaining heavy metal mass, isotopic
 composition, and storage location. A model that begins with a representative
-average composition cannot evaluate how alternative inventory-selection
+average composition cannot evaluate how alternative inventory selection
 policies change the material supplied to separations and transmutation
 facilities.
 
-The present work addresses this gap by combining an assembly-resolved U.S.
+The present work addresses this gap by combining an assembly resolved U.S.
 inventory facility with dynamically deployed \gls{ADS} and supporting fuel cycle
 facilities in \Cyclus. It does not replace detailed neutronics, depletion,
 materials, or economic models. Instead, it provides the system layer through
 which those models can be connected to the actual characteristics and
 availability of U.S. used nuclear fuel. This representation permits analysis
-of inventory-selection policies, throughput limits, facility scaling,
+of inventory selection policies, throughput limits, facility scaling,
 deployment timing, material availability, and the evolution of the remaining
 national inventory.
 
@@ -1249,25 +1283,25 @@ national inventory.
 
 The literature reviewed in Section~\ref{sec:litrev} demonstrates substantial
 progress in accelerator-driven transmutation, but the principal areas of
-progress have remained separated. Reactor-physics and engineering studies
+progress have remained separated. Reactor physics and engineering studies
 have developed increasingly detailed representations of accelerators,
 spallation targets, subcritical cores, fuels, coolants, and transmutation
 performance. Fuel cycle studies have examined the deployment of reactors,
-separations plants, fabrication facilities, and waste-management
-infrastructure over long periods. National spent-fuel databases have also
+separations plants, fabrication facilities, and waste management
+infrastructure over long periods. National spent fuel databases have also
 developed sufficiently detailed records to characterize individual discharged
 fuel assemblies. However, these capabilities have not generally been combined
 in a single simulation. In the literature reviewed for this thesis, no
 published study was identified that dynamically couples a real,
-assembly-resolved U.S. spent nuclear fuel inventory to an \gls{ADS} facility inside
+assembly resolved U.S. spent nuclear fuel inventory to an \gls{ADS} facility inside
 a fuel cycle simulator and evaluates how the selection of particular
-assemblies affects transmutation-system deployment and the evolution of the
+assemblies affects transmutation system deployment and the evolution of the
 remaining national inventory.
 
 European \gls{ADS} research has produced the most mature combination of
 experimental facilities, component demonstrations, core calculations, and
 regional fuel cycle studies. \gls{GUINEVERE} investigated accelerator coupling and
-subcriticality monitoring, \gls{MEGAPIE} demonstrated a liquid-metal spallation
+subcriticality monitoring, \gls{MEGAPIE} demonstrated a liquid metal spallation
 target under a megawatt-class proton beam, and \gls{MYRRHA} has advanced the
 engineering design and staged implementation of an integrated \gls{ADS} research
 facility
@@ -1281,7 +1315,7 @@ phase-out scenario
 \cite{coquelet_pascal_cosi6_2015,rodriguez_nuclear_2020}.
 These studies provide detailed information about European reactor fleets,
 fuel cycle infrastructure, and transmutation strategies, but their feed
-materials are represented as reactor-specific or scenario-specific fuel
+materials are represented as reactor specific or scenario specific fuel
 streams and batches. They do not begin with the discrete assembly records of
 the existing U.S. inventory or evaluate alternative rules for selecting
 particular U.S. assemblies for processing.
@@ -1290,7 +1324,7 @@ The U.S. Accelerator Transmutation of Waste and Advanced Accelerator
 Applications programs addressed many policy relevant aspects of a complete
 transmutation system. Their roadmaps and system studies considered
 separations, repeated actinide recycle, fuel fabrication, accelerator
-reliability, spallation-target design, subcritical burners, and final waste
+reliability, spallation target design, subcritical burners, and final waste
 management
 \cite{vantuyleRoadmapDevelopingATW2001,
 bellerUSAcceleratorTransmutation2001}.
@@ -1298,7 +1332,7 @@ These efforts recognized that the performance of an \gls{ADS} could not be asses
 independently from the facilities that prepare, recycle, and manage its fuel.
 Nevertheless, the principal \gls{ATW} and \gls{AAA} studies were conducted before the
 development of current agent-based fuel cycle simulators and before the
-availability of the present assembly-level \gls{STANDARDS} database. Consequently,
+availability of the present assembly level \gls{STANDARDS} database. Consequently,
 their national inventory was represented through assumed aggregate material
 streams, reference isotopic compositions, and projected production rates
 rather than through the individual assemblies that constitute the existing
@@ -1318,7 +1352,7 @@ interaction among inventory, separations, and \gls{ADS} facilities.
 
 CiADS addresses a different part of the problem. Its published analyses
 focus on the engineering behavior of an integrated accelerator, spallation
-target, and low-power subcritical reactor. Studies have examined proton-beam
+target, and low-power subcritical reactor. Studies have examined proton beam
 control, reactor transients, beam trips, thermal margins, coolant behavior,
 and structural fatigue
 \cite{wu_design_2016,yin_power_2022,wang_transient_2023,
@@ -1336,7 +1370,7 @@ Peterson et al.\ described the planned use of \gls{UDB} information in system mo
 such as \gls{NGSAM} and in fuel cycle transition analyses using \gls{ORION}
 \cite{peterson_additional_2017}. Bae et al.\ subsequently trained a neural
 network on \gls{UDB} depletion data and implemented the resulting model in
-\Cyclus, enabling efficient prediction of spent-fuel compositions for
+\Cyclus, enabling efficient prediction of spent fuel compositions for
 reactor batches with varying burnup and enrichment
 \cite{bae_deep_2020}. These studies established that realistic U.S. data can
 improve fuel cycle simulation. The former described broader integration of
@@ -1349,9 +1383,9 @@ available assemblies changes the feed supplied to that burner.
 The gap addressed in this thesis is therefore narrower than the absence of
 either detailed \gls{ADS} models or detailed inventory data. The missing capability
 is their integration at the system level. This work represents individual
-U.S. spent-fuel assemblies as selectable resources within an agent-based
+U.S. spent fuel assemblies as selectable resources within an agent-based
 fuel cycle simulation. Assembly records derived from \gls{STANDARDS}~5.0.1 retain
-attributes relevant to material selection, including available heavy-metal
+attributes relevant to material selection, including available heavy metal
 mass, discharge date, burnup, initial enrichment, and isotopic composition
 \cite{carter_banerjee_inventory_2024}. The
 \texttt{us\_inventory} archetype supplies these resources through the
@@ -1360,7 +1394,7 @@ inventory into a single average recipe.
 
 The inventory model is coupled to an \gls{ADS} archetype whose material
 transformation is based on precomputed Serpent depletion results. The
-simulation can therefore evaluate multiple inventory-selection policies,
+simulation can therefore evaluate multiple inventory selection policies,
 including selection by availability, age, burnup, and enrichment, while
 maintaining material accounting as assemblies are supplied and their
 available masses are depleted. The results presented in
@@ -1373,9 +1407,9 @@ This integration does not by itself constitute a complete recommendation for
 U.S. waste policy. Questions involving facility siting, transportation
 approval, safeguards, separations readiness, cost, financing, and repository
 performance require additional models and institutional assumptions. Rather,
-the contribution of this thesis is to provide a U.S.-specific material-flow
+the contribution of this thesis is to provide a U.S.-specific material flow
 foundation on which those analyses can be built. By connecting an
-assembly-resolved legacy inventory to an \gls{ADS} representation in \Cyclus, the
+assembly resolved legacy inventory to an \gls{ADS} representation in \Cyclus, the
 work enables transmutation scenarios to be evaluated using the actual
 heterogeneity and availability of U.S. spent nuclear fuel instead of an
-assumed national-average feed.
+assumed national average feed.

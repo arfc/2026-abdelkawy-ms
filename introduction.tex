@@ -1,7 +1,7 @@
 
 Nuclear power has supplied the United States with large quantities of
 low-carbon electricity for more than six decades. The fuel discharged from
-those reactors, however, remains a long-term national responsibility. By the
+those reactors, however, remains a long term national responsibility. By the
 end of 2025, commercial reactors in the United States had permanently
 discharged roughly \(95{,}000\) \gls{MTU} of \gls{UNF}, and the
 inventory continues to grow by approximately \(2{,}000\) \gls{MTU} each year
@@ -21,7 +21,7 @@ inventory is the accumulated result of decades of reactor operation.
 Assemblies discharged in different years were fabricated with different
 initial enrichments, irradiated to different burnups, operated in different
 reactor types, and cooled for different lengths of time. Their remaining
-heavy-metal masses and isotopic compositions therefore vary considerably.
+heavy metal masses and isotopic compositions therefore vary considerably.
 Some assemblies contain larger quantities of residual fissile material,
 plutonium, or minor actinides than others. Some have cooled for several
 decades, while others were discharged recently and continue to generate
@@ -48,41 +48,41 @@ criticality, its operation depends on the external source, allowing fuel
 compositions with high concentrations of minor actinides to be considered
 under conditions that would be more difficult to accommodate in a critical
 reactor. Detailed studies have examined accelerator reliability, spallation
-targets, subcritical-core physics, liquid-metal coolants, fuel behavior, and
+targets, subcritical core physics, liquid metal coolants, fuel behavior, and
 the rates at which plutonium and minor actinides could be consumed. These
 studies establish the physical basis for accelerator-driven transmutation and
 provide increasingly realistic designs for future facilities.
 
 A technically feasible core, however, is not the same as a viable
-transmutation strategy. A reactor-physics calculation may show how much
+transmutation strategy. A reactor physics calculation may show how much
 actinide material one system can consume, but it does not determine where that
 material will come from, which assemblies will be processed first, how the
 feed will change over time, or how many facilities will be required. Before an
 \gls{ADS} can consume actinides, spent fuel must be selected from storage,
 transported, cooled as needed, separated, and converted into a suitable feed
 form. The transmutation facility must then be deployed, supplied, operated,
-and eventually integrated with storage, recycle, and waste-management
+and eventually integrated with storage, recycle, and waste management
 facilities. The material discharged from the \gls{ADS} may require further
 processing or repeated recycle before the desired degree of actinide
 destruction is achieved.
 
-The central problem is therefore a fuel-cycle problem rather than only a
-single-core problem. It requires a model that can follow material from the
+The central problem is therefore a fuel cycle problem rather than only a
+single core problem. It requires a model that can follow material from the
 existing inventory, through selection and processing, into a transmutation
 facility, and finally into the inventories and waste streams that remain.
 Such a model must operate over timescales of years or decades while retaining
 enough information to distinguish among assemblies. It must also allow
 facilities to compete for resources, enforce throughput limits, and respond
 to changes in material availability. These capabilities are difficult to
-represent using a single average spent-fuel composition.
+represent using a single average spent fuel composition.
 
-Many previous fuel-cycle studies have necessarily simplified the inventory by
+Many previous fuel cycle studies have necessarily simplified the inventory by
 representing it as an aggregated material stream or a small set of
 representative recipes \cite{rodriguez_nuclear_2020,nea_regional_scenarios_2009,coquelet_pascal_cosi6_2015}.
 That approach is useful when comparing generic
 future fuel cycles or studying equilibrium reactor fleets. It is less
 satisfactory when the starting point is the existing U.S. inventory. A
-national-average recipe cannot identify whether the material it represents
+national average recipe cannot identify whether the material it represents
 comes from older or newer assemblies, whether it has high or low burnup,
 whether it is concentrated at a few sites or dispersed across the country, or
 which assemblies would actually be selected under a particular management
@@ -93,7 +93,7 @@ remains untreated.
 Recent inventory databases make a more realistic representation possible.
 The \gls{STANDARDS}~5.0.1 database \cite{peterson_unf-st&dards_2017,peterson_additional_2017}
 contains assembly-level information describing
-the U.S. commercial spent-fuel inventory, including attributes such as
+the U.S. commercial spent fuel inventory, including attributes such as
 discharge date, burnup, initial enrichment, mass, and calculated isotopic
 composition. This level of detail creates an opportunity to treat the
 national inventory not as a single homogeneous stockpile, but as a collection
@@ -103,15 +103,15 @@ move through a future fuel cycle. The information must be incorporated into a
 dynamic simulator capable of representing transactions among facilities.
 
 The work is conducted within the Advanced Reactors and Fuel Cycles group at
-\gls{UIUC}, where agent-based fuel-cycle simulation is used to examine the
-system-level consequences of advanced nuclear technologies. It also
-contributes to the UIUC-led \gls{EINSTEIN} project under the \gls{ARPAE} \gls{NEWTON} program,
-which brings together neutronics, nuclear-data, materials, fuel-cycle, and
+\gls{UIUC}, where agent-based fuel cycle simulation is used to examine the
+system level consequences of advanced nuclear technologies. It also
+contributes to the UIUC led \gls{EINSTEIN} project under the \gls{ARPAE} \gls{NEWTON} program,
+which brings together neutronics, nuclear data, materials, fuel cycle, and
 techno-economic analyses to evaluate externally driven transmutation systems.
 The topic of this thesis involves simulation with \Cyclus,
-detailed spent-fuel inventory data, and higher-fidelity reactor calculations,
+detailed spent fuel inventory data, and higher-fidelity reactor calculations,
 to fill a gap between the available inventory information and
-existing system-level transmutation models.
+existing system level transmutation models.
 The fuel assemblies that exist today with the transmutation technologies being
 proposed for the future.
 
@@ -127,17 +127,17 @@ supplier to interact with processing, storage, and transmutation facilities
 within the same simulation.
 
 Two new facility archetypes are developed for this purpose. The
-\texttt{us\_inventory} archetype represents individual U.S. spent-fuel
+\texttt{us\_inventory} archetype represents individual U.S. spent fuel
 assemblies as selectable material resources. Each assembly retains metadata
-including its heavy-metal mass, discharge date, burnup, initial enrichment,
+including its heavy metal mass, discharge date, burnup, initial enrichment,
 and isotopic composition derived from \gls{STANDARDS}~5.0.1.
 Rather than collapsing these records into one average composition, the facility supplies
 material through the \Cyclus Dynamic Resource Exchange according to
-user-defined throughput limits and inventory-selection policies.
+user defined throughput limits and inventory selection policies.
 
 The second archetype \texttt{ads}, represents an \gls{ADS}. Its material transformation is
 based on precomputed Serpent depletion calculations, allowing the
-fuel-cycle simulation to incorporate higher-fidelity neutronics results
+fuel cycle simulation to incorporate higher fidelity neutronics results
 without performing a full transport and depletion calculation during every
 simulation time step. Coupling the two archetypes makes it possible to follow
 material from individual inventory records into the modeled transmutation
@@ -151,22 +151,22 @@ decisions or recommendations for U.S. waste management. Instead, they provide
 controlled cases for examining how different assumptions about access to the
 inventory affect the material supplied to a transmutation system. For
 example, prioritizing older assemblies may produce a different feed
-composition than prioritizing high-burnup or high-enrichment assemblies, even
+composition than prioritizing high burnup or high enrichment assemblies, even
 when the same total mass is supplied. The simulation records these
 differences and preserves the connection between the supplied material and
 the assemblies from which it originated.
 
-The primary contribution of this thesis is a material-flow model rather than
+The primary contribution of this thesis is a material flow model rather than
 a new accelerator-driven reactor design or a full evaluation of whether the
 United States should deploy accelerator-driven transmutation. A decision of
-that kind would still require detailed neutronics, thermal-hydraulics,
+that kind would still require detailed neutronics, thermal hydraulics,
 materials, safety, economic, transportation, safeguards, and repository
 analyses. What this work provides instead is a model that connects a
-realistic, assembly-resolved representation of the U.S. inventory to an
-\gls{ADS} facility inside a dynamic fuel-cycle simulation.
+realistic, assembly resolved representation of the U.S. inventory to an
+\gls{ADS} facility inside a dynamic fuel cycle simulation.
 
 This connection provides a foundation for broader policy and deployment
-studies. A future analysis could add site-specific transportation,
+studies. A future analysis could add site specific transportation,
 separations capacity, construction schedules, facility siting, operating
 costs, or alternative transmutation technologies. Those questions cannot be
 fully grounded in the present inventory, however, unless the model first
@@ -186,12 +186,12 @@ thesis provides one step toward evaluating that larger system.
 The remainder of this thesis is organized as follows.
 Chapter~\ref{ch:background} reviews \gls{UNF} management in the
 United States, the \Cyclus framework, accelerator-driven systems, the
-\gls{EINSTEIN} program, and prior transmutation fuel-cycle simulations. It concludes
+\gls{EINSTEIN} program, and prior transmutation fuel cycle simulations. It concludes
 by identifying the research gap addressed in this work.
 Chapter~\ref{ch:methodology} describes the design and implementation of the
 \texttt{us\_inventory} and \texttt{ads} archetypes, the preparation of their
 input data, and the simulation scenarios considered.
 Chapter~\ref{ch:results} presents the simulation results and compares the
-effects of the alternative inventory-selection policies.
+effects of the alternative inventory selection policies.
 Finally, Chapter~\ref{ch:conclusion} discusses the implications and
 limitations of the results and identifies directions for future development.
