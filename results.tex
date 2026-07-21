@@ -525,55 +525,85 @@ therefore stalls when its feed buffer cannot again accumulate a full
     \end{tabular}
 \end{table}
 
-\subsection{Composition of the Waste Stream}
+\subsection{Representative ADSs Discharge Composition}
 \label{subsec:results-fate-waste}
 
-Figure~\ref{fig:results-case3-recycle-waste} shows the final repository
-composition for the ADS~1 recycling run as the mass of each of the 25 most
-abundant nuclides. The stream is overwhelmingly uranium: \({}^{238}\mathrm{U}\)
-alone accounts for roughly \(8.5\times10^{4}~\mathrm{t}\), four orders of
-magnitude above any minor actinide. This is a direct consequence of the scarcity
-documented in Section~\ref{sec:results-baseline}. Minor actinides constitute only
-about \(0.12\%\) of the spent fuel, so extracting the roughly
-\(100~\mathrm{t}\) consumed by the burner requires separations to process on the
-order of the entire drawn inventory. The uranium and fission products stripped
-from tens of thousands of tonnes of spent fuel therefore dominate the disposal
-stream. The transmutation mission changes the character of the material sent to
-disposal but does not substantially reduce its mass.
+Figure~\ref{fig:results-ads1-discharge} shows the isotopic composition of one
+representative \(27~\mathrm{t}\) discharge from ADS~1. The composition is
+extracted from the ADS output received by the downstream separations facility
+before that material is partitioned or combined with another stream. It
+therefore excludes the uranium, plutonium, and fission products removed from the
+original spent fuel during front-end separation. This distinction is important:
+the previous repository inventory analysis combined the ADS discharge with the
+much larger front-end separations reject stream and did not represent the
+material leaving the ADS alone.
 
-That change in character is nonetheless the intended effect, and it is visible in
-the figure. Minor actinides are almost absent from the waste: americium, the most
-abundant minor actinide in the original fuel, does not appear among the major
-waste nuclides at all under recycling, having been recovered and burned. In the
-once-through run the same plot shows a small residual \({}^{241}\mathrm{Am}\) peak,
-which recycling removes, a direct illustration of recovery closing that pathway.
-The ADS~1 cycle therefore removes most minor actinides from the waste but does
-not reduce its volume.
+The discharge contains surviving neptunium, americium, and curium, together with
+fission products and actinides generated during irradiation. Although the
+initial ADS~1 loading contains only neptunium, americium, and curium, plutonium
+isotopes, particularly \({}^{238}\mathrm{Pu}\), appear prominently in the
+discharge. This plutonium is not material carried into the core from the
+front-end reject stream. The discharged composition is obtained from the full
+\textsc{Serpent} depletion inventory, in which neutron-induced transmutation
+and radioactive decay chains convert part of the initial minor actinide
+inventory into descendant plutonium isotopes and small quantities of uranium.
+These products remain part of the discharged actinide inventory and are
+therefore not counted as destroyed actinide.
 
-The figure also exposes the principal limitation of ADS~1. Plutonium is the
-second most abundant component of the waste, with \({}^{239}\mathrm{Pu}\) near
-\(7\times10^{2}~\mathrm{t}\). Because this burner consumes only minor actinides,
-the separation process routes the entire plutonium content of every processed
-assembly to disposal without irradiation. A cycle designed to destroy minor actinides
-therefore leaves the larger and equally long-lived plutonium inventory in the
-waste, which is precisely the gap that ADS~2 is intended to address.
-
-\begin{figure}[htbp]
+\begin{figure}[h!]
   \centering
-  \includegraphics[width=0.95\textwidth]{figures/case3_ma_recycle_100yr_waste_composition}
-  \caption[Waste stream composition for ADS~1.]{Final repository composition
-  for the ADS~1 recycling run, showing the 25 most abundant nuclides on a
-  logarithmic mass scale; minor actinides are highlighted. The stream is
-  dominated by uranium and plutonium stripped by separations, while minor
-  actinides are nearly absent, having been recovered and burned.}
-  \label{fig:results-case3-recycle-waste}
+  \includegraphics[width=0.95\textwidth]
+    {figures/ads1_discharge_composition}
+  \caption[Representative ADS~1 discharge composition.]
+  {Isotopic composition of one representative \(27~\mathrm{t}\) discharge
+  from ADS~1, showing the 25 most abundant nuclides on a logarithmic mass
+  scale; minor actinides are highlighted. The composition is extracted from
+  the ADS output before downstream separation and excludes the front-end
+  separations reject stream. Although the initial core contains only
+  neptunium, americium, and curium, plutonium isotopes and small quantities of
+  uranium appear as descendant actinides produced during irradiation in the
+  \textsc{Serpent} depletion calculation.}
+  \label{fig:results-ads1-discharge}
+\end{figure}
+
+
+Figure~\ref{fig:results-ads2-discharge} shows one representative discharge from
+ADS~2, extracted using the same ADS-only method. Unlike ADS~1, the ADS~2 core is
+initially loaded with approximately equal masses of plutonium and minor
+actinides. Plutonium isotopes therefore remain the largest actinide components
+of the discharge, followed by surviving and produced neptunium, americium, and
+curium. The stream also contains the fission products generated during the
+irradiation cycle.
+
+Under recycling, the downstream separations facility recovers plutonium,
+neptunium, americium, and curium from this discharge and returns those actinides
+to the burner feed. Fission products and other non-actinides are instead removed
+from the recycle stream and routed to waste. ADS~2 therefore retains plutonium
+within the burner cycle rather than routing it directly outside the burner feed,
+which allows it to address the broader transuranic inventory rather than minor
+actinides alone.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.95\textwidth]
+    {figures/ads2_discharge_composition}
+  \caption[Representative ADS~2 discharge composition.]
+  {Isotopic composition of one representative ADS~2 discharge, showing the
+  25 most abundant nuclides on a logarithmic mass scale; minor actinides are
+  highlighted. The stream is extracted directly from the ADS output before
+  downstream separation. Plutonium is the largest actinide component, followed
+  by minor actinides, while the discharge also contains fission products
+  generated during irradiation. Under recycling, plutonium and the minor
+  actinides are recovered for reuse, while fission products and other
+  non-actinides are routed to waste.}
+  \label{fig:results-ads2-discharge}
 \end{figure}
 
 \subsection{Material Recovered under Recycling}
 \label{subsec:results-fate-recovered}
 
 Where ADS~1 sends plutonium to waste, ADS~2 returns it to the feed.
-Figure~\ref{fig:results-case4-recycle-product} shows the material discharged
+Figure~\ref{fig:results-ads2-discharge} shows the material discharged
 from the \gls{ADS} in the ADS~2 recycling run. The separation facility recovers
 the actinides in this stream and blends them back into fresh feed. The stream is led by
 plutonium isotopes, surviving and bred \({}^{239}\mathrm{Pu}\),
@@ -588,20 +618,71 @@ recovered stream also confirms that the archetype preserves the metastable state
 through the composition transformation, rather than collapsing it onto the ground
 state.
 
-\begin{figure}[htbp]
+
+The isotope specific discharge plots in
+Figures~\ref{fig:results-ads1-discharge}
+and~\ref{fig:results-ads2-discharge} identify the principal nuclides leaving
+each burner. To assess the effectiveness of the transmutation step more
+directly, Figures~\ref{fig:results-ads1-before-after}
+and~\ref{fig:results-ads2-before-after} compare the material entering and
+leaving one matched irradiation cycle for each configuration. Each comparison
+represents one core loading and its corresponding discharge, rather than the
+cumulative throughput of the 100 year simulation. This per-cycle basis avoids
+counting recycled material more than once and isolates the composition change
+produced by the ADS itself.
+
+\begin{figure}[h!]
   \centering
-  \includegraphics[width=0.95\textwidth]{figures/case4_puma_recycle_100yr_ads_product}
-  \caption[Recovered discharge stream from ADS~2.]{Composition of the material
-  discharged from ADS~2 during the recycling run, showing the 25 most abundant
-  nuclides on a logarithmic mass scale; minor actinides are highlighted.
-  Plutonium is the most abundant actinide in the discharge, followed by minor
-  actinides. The discharge also contains fission products, while the recovered
-  actinides are returned to the feed.}
-  \label{fig:results-case4-recycle-product}
+  \includegraphics[width=0.78\textwidth]
+    {figures/ads1_before_after}
+  \caption[ADS~1 core composition before and after irradiation.]
+  {Stacked comparison of the material entering and leaving one representative
+  ADS~1 irradiation cycle. The \(27~\mathrm{t}\) input contains neptunium,
+  americium, and curium. The discharge contains approximately
+  \(15.84~\mathrm{t}\) of remaining actinides and
+  \(11.16~\mathrm{t}\) of fission products and other non-actinides.
+  The net actinide reduction is approximately \(11.16~\mathrm{t}\), or
+  \(41.3\%\) of the input actinide mass. Plutonium and the small uranium
+  component in the discharge are descendant actinides produced during
+  irradiation.}
+  \label{fig:results-ads1-before-after}
 \end{figure}
 
-\subsection{Implications for the Waste Inventory}
-\label{subsec:results-fate-implications}
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.78\textwidth]
+    {figures/ads2_before_after}
+  \caption[ADS~2 core composition before and after irradiation.]
+  {Stacked comparison of the material entering and leaving one representative
+  ADS~2 irradiation cycle. The \(4.418~\mathrm{t}\) input contains
+  approximately equal masses of plutonium and minor actinides. The discharge
+  contains approximately \(2.23~\mathrm{t}\) of remaining actinides and
+  \(2.18~\mathrm{t}\) of fission products and other non-actinides. The net
+  actinide reduction is approximately \(2.19~\mathrm{t}\), or \(49.5\%\) of
+  the input actinide mass. The small difference between the total input and
+  output masses is the mass defect recorded by the reduced order depletion
+  model.}
+  \label{fig:results-ads2-before-after}
+\end{figure}
+
+For ADS~1, the total actinide inventory decreases from
+\(27.00~\mathrm{t}\) in the initial core to approximately
+\(15.84~\mathrm{t}\) in the discharge. The remaining mass appears primarily as
+fission products and other non-actinides. The redistribution among the actinide
+groups is also significant: neptunium, americium, and curium decrease, while
+plutonium is produced. The decrease of an individual minor actinide group is
+therefore larger than the net actinide destruction because part of that material
+is converted into another actinide rather than fissioned.
+
+ADS~2 reduces the actinide mass from \(4.418~\mathrm{t}\) to approximately
+\(2.231~\mathrm{t}\) per cycle, corresponding to a \(49.5\%\) net reduction.
+Its larger fractional reduction reflects the plutonium-bearing feed, but the
+discharge still contains substantial plutonium and minor actinides that require
+recovery and additional irradiation for further destruction. These comparisons
+show that neither burner eliminates its actinide loading in one pass. Instead,
+each converts approximately \(41\)--\(50\%\) of the loaded actinide mass per
+cycle, making the availability and performance of the downstream separations
+and recycle system central to the overall mission.
 
 Taken together, these results qualify what transmutation achieves for the national
 inventory. Over a century, even the more favorable recycling configuration
