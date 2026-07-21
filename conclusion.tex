@@ -1,47 +1,81 @@
-This thesis set out to connect a detailed picture of the U.S. used-fuel inventory
-to a model of an accelerator-driven burner, so that the transmutation of minor
+This thesis set out to connect a detailed picture of the U.S. used fuel inventory
+to a model of an accelerator driven burner, so that the transmutation of minor
 actinides could be evaluated as a national fuel cycle rather than as an isolated
 reactor calculation. Two cyclus archetypes were developed to that end.
 \texttt{us\_inventory} represents the inventory at assembly resolution, supplying
 material by a choice of selection policies while preserving each assembly's
-composition and provenance; \texttt{ads} models an accelerator-driven
+composition and provenance; \texttt{ads} models an accelerator driven
 minor actinide burner from precomputed Serpent depletion cases, transforming a
 loaded core into its irradiated composition and closing the actinide mass balance
 each cycle. Together they form a complete transmutation fuel cycle when combined
 with standard separations, mixing, and disposal facilities.
 
-Exercising this fuel cycle across eight scenarios produced two findings.
-First, minor actinide transmutation is bound by its
-feed rather than by \gls{ADS} capacity. The accessible minor actinide inventory is
-only about \(104~\mathrm{t}\), under four core-loadings, so the large
-minor actinide only burner exhausts its supply and stalls, destroying about a
-third of the inventory once-through and just over half with recycling, while no
-increase in reactor power can extend it further. The smaller fifty-fifty core
-avoids this limit only by co-burning plutonium, which changes the mission from
-minor actinide destruction to broader transuranic destruction. Second, because
-minor actinide is a trace component of the spent fuel, the mission alters the
-character of the waste, removing the constituents that dominate its long term
-hazard, without reducing the mass or volume that requires disposal, and it does so
-at the cost of reprocessing essentially the entire drawn inventory. The per-cycle
-transmutation rate was shown to agree with an independent fission energy balance to
-within a few percent, giving confidence in the reduced order model.
+Exercising this fuel cycle across eight scenarios produced two principal
+findings. First, minor actinide transmutation is limited by the availability
+of its feed rather than by ADS capacity. The accessible minor actinide
+inventory is approximately \(103.8~\mathrm{t}\), fewer than four fresh
+loadings of the \(27~\mathrm{t}\) ADS~1 core. ADS~1 therefore stalls after
+three cycles under once through operation and five cycles with recycling.
+ADS~2 avoids this limitation only by coburning plutonium, thereby changing
+the mission from dedicated minor actinide destruction to broader transuranic
+destruction.
 
-These findings temper the expectation that accelerator-driven transmutation offers
-a straightforward reduction of the waste burden. It can strip the most hazardous
-component from the waste, but it is a decades-long undertaking for a small fleet of
-high power units, limited by fuel handling rather than reactor performance, and it
-leaves the bulk of the disposal problem intact.
+Second, the direct input--output comparisons show that neither ADS
+configuration eliminates its loaded actinides in one irradiation pass.
+ADS~1 reduces the actinide mass from \(27.00~\mathrm{t}\) to approximately
+\(15.84~\mathrm{t}\), corresponding to \(11.16~\mathrm{t}\), or
+\(41.3\%\), of net actinide destruction per cycle. ADS~2 reduces the
+actinide mass from \(4.418~\mathrm{t}\) to approximately
+\(2.231~\mathrm{t}\), corresponding to \(2.187~\mathrm{t}\), or
+\(49.5\%\), of net destruction per cycle. The remaining actinides must be
+recovered and irradiated again if greater destruction is required. At the
+full fuel cycle scale, the 100 year ADS~1 recycling scenario destroys
+\(55.8~\mathrm{t}\) of the initial \(103.8~\mathrm{t}\) accessible
+minor actinide inventory, while the once through case destroys
+\(33.5~\mathrm{t}\).
 
-Several extensions follow directly from this work. The most immediate is to couple
-the mass-conserving waste histories to a decay and dose calculation, so that the
-reduction in long-term radiotoxicity and decay heat, the benefit that motivates
-minor actinide removal, can be quantified rather than inferred. A second is to use
-the assembly-level provenance recorded by \texttt{us\_inventory}, which associates
-each supplied assembly with its source facility and coordinates, as the input to a
-transportation and siting analysis of where retrieval and processing would occur.
-A third is an economic model of the reprocessing and handling burden the results
-imply, which this study describes but does not price. Finally, the reduced-order
-\texttt{ads} model could be broadened with a larger library of depletion cases, or
-the selection policy effect examined within the coupled simulation rather than on
-the static inventory alone. In each case, the archetypes and results developed here
-are intended as the foundation such analyses would build upon.
+These results show that accelerator driven transmutation is not a stand alone
+solution to the spent fuel problem. It is a downstream component of a much
+larger reprocessing and recycle system. Before the burner can provide any
+benefit, essentially the entire selected spent fuel inventory must be
+retrieved and processed to recover the comparatively small plutonium and
+minor actinide fractions. The simulations assume that these materials can be
+recovered into separate streams at high efficiency; they do not demonstrate
+the technical, economic, safeguards, licensing, or policy feasibility of that
+infrastructure. The difficulty of establishing and operating the required
+reprocessing system may therefore be at least as important as the difficulty
+of designing the ADS itself.
+
+Partitioning also changes the composition and management of the waste streams
+before any ADS irradiation occurs. Separating uranium, fission products,
+plutonium, and minor actinides may itself alter decay heat, radiotoxicity, waste
+form requirements, and repository performance, depending on the disposition
+of each stream. Because this thesis does not include a reprocessing only
+reference scenario or a downstream radiotoxicity calculation, it cannot
+determine how much of the potential long term waste benefit would result from
+partitioning alone and how much would result from the additional actinide
+destruction in the ADS. The contribution quantified here is therefore the
+incremental net destruction performed by the burner after separation:
+\(41.3\%\) per pass for ADS~1 and \(49.5\%\) for ADS~2.
+
+Several extensions follow directly from this work. The most immediate is to
+couple the mass-conserving waste histories to a decay and dose calculation so
+that the reductions in long term radiotoxicity and decay heat, which motivate
+minor actinide removal, can be quantified rather than inferred. That analysis
+should include a reprocessing only reference scenario in which uranium,
+plutonium, minor actinides, and fission products are partitioned but not
+irradiated in an ADS. Comparing that case with both the unreprocessed inventory
+and the ADS scenarios would distinguish the repository benefit of separation
+itself from the incremental benefit of transmutation.
+
+A second extension is to use the assembly-level provenance recorded by
+\texttt{us\_inventory}, which associates each supplied assembly with its source
+facility and coordinates, as the input to a transportation and siting analysis
+of where retrieval and processing would occur. A third is to develop an
+economic model of the reprocessing and handling burden implied by the results,
+which this study describes but does not price. Finally, the reduced order
+\texttt{ads} model could be broadened with a larger library of depletion cases,
+and the effects of inventory selection policies could be examined within the
+fully coupled simulation rather than only against the static inventory. In
+each case, the archetypes and results developed here provide a foundation for
+these subsequent analyses.

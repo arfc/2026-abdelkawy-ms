@@ -525,7 +525,7 @@ therefore stalls when its feed buffer cannot again accumulate a full
     \end{tabular}
 \end{table}
 
-\subsection{Representative ADSs Discharge Composition}
+\subsection{Representative ADS Discharge Compositions}
 \label{subsec:results-fate-waste}
 
 Figure~\ref{fig:results-ads1-discharge} shows the isotopic composition of one
@@ -599,27 +599,12 @@ actinides alone.
   \label{fig:results-ads2-discharge}
 \end{figure}
 
-\subsection{Material Recovered under Recycling}
+\subsection{Representative Core Input--Output Comparison}
 \label{subsec:results-fate-recovered}
+\label{subsec:results-input-output}
 
-Where ADS~1 sends plutonium to waste, ADS~2 returns it to the feed.
-Figure~\ref{fig:results-ads2-discharge} shows the material discharged
-from the \gls{ADS} in the ADS~2 recycling run. The separation facility recovers
-the actinides in this stream and blends them back into fresh feed. The stream is led by
-plutonium isotopes, surviving and bred \({}^{239}\mathrm{Pu}\),
-\({}^{238}\mathrm{Pu}\), and \({}^{240}\mathrm{Pu}\), followed by the minor
-actinides \({}^{237}\mathrm{Np}\), \({}^{244}\mathrm{Cm}\), \({}^{241}\mathrm{Am}\),
-and their heavier companions. The discharge also contains fission products
-generated during the cycle. By recovering plutonium together with the minor
-actinides, ADS~2 keeps that plutonium in the burner over successive passes rather than stranding it in
-waste, which is why it addresses the broader transuranic inventory rather than the
-minor actinides alone. The presence of \({}^{242\mathrm{m}}\mathrm{Am}\) in the
-recovered stream also confirms that the archetype preserves the metastable state
-through the composition transformation, rather than collapsing it onto the ground
-state.
+The isotope-specific discharge plots in
 
-
-The isotope specific discharge plots in
 Figures~\ref{fig:results-ads1-discharge}
 and~\ref{fig:results-ads2-discharge} identify the principal nuclides leaving
 each burner. To assess the effectiveness of the transmutation step more
@@ -627,7 +612,7 @@ directly, Figures~\ref{fig:results-ads1-before-after}
 and~\ref{fig:results-ads2-before-after} compare the material entering and
 leaving one matched irradiation cycle for each configuration. Each comparison
 represents one core loading and its corresponding discharge, rather than the
-cumulative throughput of the 100 year simulation. This per-cycle basis avoids
+cumulative throughput of the 100-year simulation. This per-cycle basis avoids
 counting recycled material more than once and isolates the composition change
 produced by the ADS itself.
 
@@ -660,7 +645,7 @@ produced by the ADS itself.
   \(2.18~\mathrm{t}\) of fission products and other non-actinides. The net
   actinide reduction is approximately \(2.19~\mathrm{t}\), or \(49.5\%\) of
   the input actinide mass. The small difference between the total input and
-  output masses is the mass defect recorded by the reduced order depletion
+  output masses is the mass defect recorded by the reduced-order depletion
   model.}
   \label{fig:results-ads2-before-after}
 \end{figure}
@@ -770,15 +755,28 @@ at a higher rate by accepting plutonium as feed.
 \subsection{Transmutation Changes Waste Composition}
 \label{subsec:discussion-character}
 
-The second finding concerns what the mission does to the waste. Minor actinides
-constitute only \(0.12\%\) of the spent fuel, so extracting the roughly
-\(100~\mathrm{t}\) consumed by the burner requires separations to process on the
-order of the entire drawn inventory. Uranium and fission products stripped from
-that fuel dominate the disposal stream, together with plutonium in the ADS~1
-cycle (Section~\ref{subsec:results-fate-waste}). The transmutation mission
-therefore produces little reduction in the total bulk mass routed to waste. Its
-principal modeled effect is instead a change in isotopic composition through the
-destruction and redistribution of actinides.
+The second finding concerns what the mission does to the waste. The
+representative input--output comparisons in
+Figures~\ref{fig:results-ads1-before-after}
+and~\ref{fig:results-ads2-before-after} show that neither burner eliminates
+its actinide loading in one irradiation pass. ADS~1 reduces the loaded
+actinide mass by \(41.3\%\) per cycle, while ADS~2 reduces it by
+\(49.5\%\). The remaining actinides require further separation and recycle
+if additional destruction is desired.
+
+These per-cycle reductions describe the performance of the burner itself,
+but they do not translate into a comparable reduction in the total mass
+requiring disposal. Minor actinides constitute only \(0.12\%\) of the spent
+fuel, so recovering the approximately \(100~\mathrm{t}\) accessible inventory
+requires separations to process on the order of the entire drawn spent fuel
+inventory. Uranium and fission products removed during front-end separation
+therefore dominate the disposal stream. In the ADS~1 fuel cycle, plutonium
+produced from the minor actinide feed is also routed outside the ADS~1 recycle
+stream. The principal modeled effect of transmutation is consequently a change
+in isotopic composition through the destruction and redistribution of
+actinides, rather than a substantial reduction in the bulk mass routed to
+waste (Section~\ref{sec:results-evolution}).
+
 Repository volume, requirements for waste packages, and effects on the disposal
 footprint were not evaluated in this work. The modeled transmutation process
 removes minor actinides, which contribute strongly to the long-term radiotoxicity
@@ -823,6 +821,26 @@ isolates the supply side and does not reflect any feedback between selection and
 operation. All production scenarios use the single \texttt{highest\_minor\_actinide}
 policy, so the effect of policy on outcomes for the full fuel cycle, rather than
 only on the feed, is left for future work.
+
+A more fundamental system level limitation is that the enabling separations
+infrastructure is assumed rather than evaluated. Both burner configurations
+require the national spent fuel inventory to be reprocessed before the ADS can
+receive its feed, and ADS~2 additionally requires plutonium and minor actinides
+to be recovered as separate streams and blended in a prescribed ratio. The
+technical readiness, recovery losses, product quality, safeguards requirements,
+cost, and policy acceptability of such an infrastructure may be at least as
+consequential to deployment as the performance of the burner itself. The
+present simulations therefore should not be interpreted as demonstrating the
+feasibility of the complete transmutation system; they evaluate its material
+flows after assuming that the necessary separations capability exists.
+
+The study also does not include a reprocessing only reference case. It therefore
+cannot isolate how much of a potential repository benefit would arise from
+partitioning uranium, plutonium, minor actinides, and fission products into
+separate streams, and how much additional benefit would result specifically
+from irradiation in the ADS. That distinction would require applying the same
+decay heat, radiotoxicity, and disposal analysis to an unreprocessed case, a
+reprocessing only case, and the reprocessing plus transmutation cases.
 
 Finally, the study stops at the mass balance. It quantifies what is destroyed and
 what remains but does not evaluate the radiological or economic consequences that

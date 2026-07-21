@@ -959,6 +959,20 @@ actinide stream limits the feed rate, so surplus plutonium
 accumulates in its buffer. This limitation arises from the composition of the
 inventory rather than from an imposed modeling constraint.
 
+The separations facilities in these scenarios are idealized material
+partitioning models. The simulations assume that an operating reprocessing
+system can recover plutonium and the minor actinides into distinct product
+streams at the specified \(99\%\) efficiencies. This is an enabling boundary
+condition of the analysis rather than a prediction of deployable process
+performance. The \textsc{Cycamore} \texttt{Separations} archetype applies
+user defined partitioning efficiencies but does not represent process
+chemistry, product purity, decontamination factors, plant availability,
+secondary waste generation, remote fabrication of actinide bearing fuel,
+safeguards, licensing, or the broader policy constraints associated with
+commercial reprocessing. The results therefore describe the material flow
+performance of the ADS scenarios conditional on such separations
+infrastructure being available.
+
 The recycling and once-through modes differ only in the routing of the burner
 discharge. In once-through mode the discharge is a terminal waste stream held in
 a \texttt{Sink}. In recycling mode it is returned to \texttt{Separations}, which
